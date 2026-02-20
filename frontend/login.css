@@ -1,0 +1,164 @@
+/* Variables to match your Dashboard */
+:root {
+    --primary: #006064;    /* Dark Teal */
+    --accent: #0fa3b1;     /* Light Teal */
+    --error: #d32f2f;
+    --success: #388e3c;
+    --bg: #f4f7f6;
+    --white: #ffffff;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--primary);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Background Effect */
+.background-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    opacity: 0.9;
+    z-index: -1;
+}
+
+/* Card Container */
+.auth-container {
+    background: var(--white);
+    width: 400px;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-header h1 { margin: 10px 0 5px; color: var(--primary); }
+.auth-header p { margin: 0; color: #666; font-size: 0.9em; }
+.logo { font-size: 3em; }
+
+/* Toggle Buttons */
+.toggle-box {
+    display: flex;
+    background: #eee;
+    padding: 5px;
+    border-radius: 25px;
+    margin-bottom: 25px;
+}
+
+.toggle-btn {
+    flex: 1;
+    border: none;
+    background: none;
+    padding: 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #666;
+    transition: all 0.3s;
+}
+
+.toggle-btn.active {
+    background: var(--white);
+    color: var(--primary);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Forms */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.hidden-form { display: none; }
+.active-form { display: flex; }
+
+.input-group label {
+    font-size: 0.85em;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 1em;
+    transition: border-color 0.3s;
+}
+
+/* Task 2: Focus, Error, Success States */
+.input-group input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.input-group input.error {
+    border-color: var(--error);
+    background-color: #fff8f8;
+}
+
+.input-group input.success {
+    border-color: var(--success);
+}
+
+.error-msg {
+    color: var(--error);
+    font-size: 0.75em;
+    min-height: 15px;
+    display: block;
+    margin-top: 2px;
+}
+
+/* Submit Button */
+.submit-btn {
+    background-color: var(--primary);
+    color: white;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 10px;
+}
+
+.submit-btn:hover {
+    background-color: var(--accent);
+}
+
+/* Task 4: Password Strength Meter */
+.strength-bar {
+    height: 4px;
+    background: #e0e0e0;
+    margin-top: 5px;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+#strength-fill {
+    height: 100%;
+    width: 0;
+    transition: width 0.3s, background 0.3s;
+}
