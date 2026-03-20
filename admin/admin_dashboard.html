@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Air Pollution Admin Dashboard</title>
+  <style>
+    body { margin:0; font-family: Arial; background:#f4f6f9; }
+    .container { display:flex; height:100vh; }
+    .sidebar { width:250px; background:white; padding:20px; box-shadow:2px 0 5px rgba(0,0,0,0.1); }
+    .sidebar h2 { margin-bottom:20px; }
+    .sidebar ul { list-style:none; padding:0; }
+    .sidebar li { margin:15px 0; cursor:pointer; }
+    .sidebar li.active { color:green; font-weight:bold; }
+
+    .main { flex:1; padding:20px; overflow:auto; }
+    .cards { display:grid; grid-template-columns:repeat(4,1fr); gap:15px; }
+    .card { background:white; padding:15px; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+
+    .heatmap { margin-top:20px; }
+    .grid { display:grid; grid-template-columns:repeat(12,1fr); gap:5px; }
+    .cell { height:20px; border-radius:3px; }
+
+    .bottom { display:grid; grid-template-columns:1fr 2fr; gap:15px; margin-top:20px; }
+    .progress { background:#ddd; border-radius:10px; overflow:hidden; }
+    .progress-bar { height:10px; background:green; }
+
+    .map { height:250px; background:#ccc; display:flex; justify-content:center; align-items:center; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="sidebar">
+    <h2>APMS Admin</h2>
+    <ul>
+      <li class="active">Dashboard</li>
+      <li>Map View</li>
+      <li><a href="station_management.html">Stations</a></li>
+      <li>Analytics</li>
+      <li>Alerts</li>
+    </ul>
+  </div>
+
+  <div class="main">
+    <h1>Dashboard Overview</h1>
+
+    <div class="cards">
+      <div class="card"><p>Total Stations</p><h2>1,428</h2></div>
+      <div class="card"><p>Active Sensors</p><h2>12,804</h2></div>
+      <div class="card"><p>Global Avg AQI</p><h2>54 (Moderate)</h2></div>
+      <div class="card"><p>Live Alerts</p><h2 style="color:red">12</h2></div>
+    </div>
+
+    <div class="card heatmap">
+      <h3>Regional AQI Heatmap</h3>
+      <div class="grid" id="heatmap"></div>
+    </div>
+
+    <div class="bottom">
+      <div class="card">
+        <h3>Station Performance</h3>
+        <p>North Station A1</p>
+        <div class="progress"><div class="progress-bar" style="width:98%"></div></div>
+
+        <p>South Industrial</p>
+        <div class="progress"><div class="progress-bar" style="width:82%"></div></div>
+
+        <p>Central Hub</p>
+        <div class="progress"><div class="progress-bar" style="width:99%"></div></div>
+
+        <p>West Coastal 4</p>
+        <div class="progress"><div class="progress-bar" style="width:45%; background:red"></div></div>
+      </div>
+
+      <div class="card">
+        <h3>Live Station Locations</h3>
+        <div class="map">Map Placeholder</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const heatmap = document.getElementById("heatmap");
+
+  for(let i=0;i<72;i++){
+    let cell = document.createElement("div");
+    cell.classList.add("cell");
+
+    let value = Math.random();
+    if(value < 0.3) cell.style.background = "#4ade80";
+    else if(value < 0.6) cell.style.background = "#facc15";
+    else cell.style.background = "#ef4444";
+
+    heatmap.appendChild(cell);
+  }
+</script>
+
+</body>
+</html>

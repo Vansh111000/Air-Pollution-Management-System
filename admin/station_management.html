@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Station Management</title>
+<style>
+body { margin:0; font-family:Arial; background:#f4f6f9; }
+.container { display:flex; height:100vh; }
+.sidebar { width:250px; background:white; padding:20px; box-shadow:2px 0 5px rgba(0,0,0,0.1); }
+.sidebar h2 { margin-bottom:20px; }
+.sidebar ul { list-style:none; padding:0; }
+.sidebar li { margin:15px 0; cursor:pointer; }
+.sidebar li.active { color:green; font-weight:bold; }
+
+.main { flex:1; padding:20px; overflow:auto; }
+.cards { display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:20px; }
+.card { background:white; padding:15px; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+
+.table { width:100%; border-collapse:collapse; }
+.table th, .table td { padding:12px; text-align:left; }
+.table th { background:#eee; }
+.table tr { border-bottom:1px solid #ddd; }
+
+.progress { background:#ddd; border-radius:10px; overflow:hidden; height:8px; }
+.progress-bar { height:8px; }
+
+.status { padding:4px 10px; border-radius:20px; font-size:12px; }
+.active { background:#d1fae5; color:green; }
+.maintenance { background:#fde68a; color:orange; }
+.offline { background:#fecaca; color:red; }
+
+.topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+.button { padding:10px 15px; border:none; border-radius:8px; cursor:pointer; }
+.green { background:#22c55e; color:white; }
+.gray { background:#e5e7eb; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="sidebar">
+    <h2>APMS Admin</h2>
+    <ul>
+      <li>Dashboard</li>
+      <li class="active">Stations</li>
+      <li>Alerts</li>
+      <li>Reports</li>
+      <li>Users</li>
+    </ul>
+  </div>
+
+  <div class="main">
+
+    <div class="topbar">
+      <h1>Monitoring Stations</h1>
+      <div>
+        <button class="button gray">Filter</button>
+        <button class="button green">+ Add New Station</button>
+      </div>
+    </div>
+
+    <div class="cards">
+      <div class="card"><p>Total Stations</p><h2>128</h2></div>
+      <div class="card"><p>Active Online</p><h2>112</h2></div>
+      <div class="card"><p>Maintenance</p><h2 style="color:orange">10</h2></div>
+      <div class="card"><p>Offline</p><h2 style="color:red">6</h2></div>
+    </div>
+
+    <div class="card">
+      <table class="table">
+        <tr>
+          <th>ID / Name</th>
+          <th>Region</th>
+          <th>Status</th>
+          <th>Battery</th>
+          <th>Admin</th>
+        </tr>
+
+        <tr>
+          <td><b>STA-4092</b><br>Everglades</td>
+          <td>Florida, US</td>
+          <td><span class="status active">Active</span></td>
+          <td><div class="progress"><div class="progress-bar" style="width:92%; background:green"></div></div></td>
+          <td>John Doe</td>
+        </tr>
+
+        <tr>
+          <td><b>STA-1022</b><br>Rocky Mountain</td>
+          <td>Colorado, US</td>
+          <td><span class="status maintenance">Maintenance</span></td>
+          <td><div class="progress"><div class="progress-bar" style="width:14%; background:orange"></div></div></td>
+          <td>Sarah Miller</td>
+        </tr>
+
+        <tr>
+          <td><b>STA-8831</b><br>Olympic Rainforest</td>
+          <td>Washington, US</td>
+          <td><span class="status offline">Offline</span></td>
+          <td><div class="progress"><div class="progress-bar" style="width:5%; background:red"></div></div></td>
+          <td>Unassigned</td>
+        </tr>
+
+        <tr>
+          <td><b>STA-2210</b><br>Sonoran Desert</td>
+          <td>Arizona, US</td>
+          <td><span class="status active">Active</span></td>
+          <td><div class="progress"><div class="progress-bar" style="width:65%; background:green"></div></div></td>
+          <td>Robert Chen</td>
+        </tr>
+
+      </table>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
