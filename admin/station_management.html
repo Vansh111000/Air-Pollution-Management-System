@@ -5,35 +5,89 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Station Management</title>
 <style>
-body { margin:0; font-family:Arial; background:#f4f6f9; }
+:root {
+  /* DARK THEME (Default) */
+  --bg-color: #020617;
+  --bg-gradient: radial-gradient(circle at top, #0f172a 0%, #020617 100%);
+  --card-bg: rgba(30, 41, 59, 0.4);
+  --card-border: rgba(56, 189, 248, 0.15);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --primary: #38bdf8;
+  --primary-hover: #0ea5e9;
+  --accent: #818cf8;
+  --danger: #ef4444;
+  --warning: #facc15;
+  --success: #10b981;
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+body.light {
+  /* LIGHT THEME */
+  --bg-color: #f8fafc;
+  --bg-gradient: radial-gradient(circle at top, #ffffff 0%, #f1f5f9 100%);
+  --card-bg: rgba(255, 255, 255, 0.95);
+  --card-border: rgba(148, 163, 184, 0.3);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --primary: #0284c7;
+  --primary-hover: #0369a1;
+  --accent: #4f46e5;
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-color);
+  background-image: var(--bg-gradient);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 .container { display:flex; height:100vh; }
-.sidebar { width:250px; background:white; padding:20px; box-shadow:2px 0 5px rgba(0,0,0,0.1); }
-.sidebar h2 { margin-bottom:20px; }
+.sidebar { width:250px; background:var(--card-bg); padding:20px; box-shadow:2px 0 5px rgba(0,0,0,0.1); border-right: 1px solid var(--card-border); }
+.sidebar h2 { margin-bottom:20px; color: var(--text-primary); }
 .sidebar ul { list-style:none; padding:0; }
-.sidebar li { margin:15px 0; cursor:pointer; }
-.sidebar li.active { color:green; font-weight:bold; }
+.sidebar li { margin:15px 0; cursor:pointer; color: var(--text-secondary); transition: color 0.2s ease; }
+.sidebar li:hover { color: var(--text-primary); }
+.sidebar li.active { color:var(--success); font-weight:bold; }
 
 .main { flex:1; padding:20px; overflow:auto; }
 .cards { display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:20px; }
-.card { background:white; padding:15px; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+.card { background:var(--card-bg); padding:15px; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.1); border: 1px solid var(--card-border); }
+.card p { color: var(--text-secondary); }
+.card h2 { color: var(--text-primary); }
 
 .table { width:100%; border-collapse:collapse; }
-.table th, .table td { padding:12px; text-align:left; }
-.table th { background:#eee; }
-.table tr { border-bottom:1px solid #ddd; }
+.table th, .table td { padding:12px; text-align:left; color: var(--text-primary); }
+.table th { background:rgba(56, 189, 248, 0.1); font-weight: 600; }
+.table tr { border-bottom:1px solid var(--card-border); }
+.table tr:last-child { border-bottom: none; }
 
-.progress { background:#ddd; border-radius:10px; overflow:hidden; height:8px; }
+.progress { background:var(--card-border); border-radius:10px; overflow:hidden; height:8px; }
 .progress-bar { height:8px; }
 
-.status { padding:4px 10px; border-radius:20px; font-size:12px; }
-.active { background:#d1fae5; color:green; }
-.maintenance { background:#fde68a; color:orange; }
-.offline { background:#fecaca; color:red; }
+.status { padding:4px 10px; border-radius:20px; font-size:12px; font-weight: 600; }
+.status.active { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+.status.maintenance { background: rgba(250, 204, 21, 0.2); color: var(--warning); }
+.status.offline { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
 
 .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
-.button { padding:10px 15px; border:none; border-radius:8px; cursor:pointer; }
-.green { background:#22c55e; color:white; }
-.gray { background:#e5e7eb; }
+.topbar h1 { color: var(--text-primary); }
+.button { padding:10px 15px; border:none; border-radius:8px; cursor:pointer; transition: all 0.2s ease; font-weight: 500; }
+.green { background:var(--success); color:white; }
+.green:hover { background: var(--primary-hover); }
+.gray { background:var(--card-bg); color: var(--text-primary); border: 1px solid var(--card-border); }
+.gray:hover { background: rgba(56, 189, 248, 0.1); }
+.theme-toggle { background: var(--primary); color: white; padding: 8px 12px; border-radius: 6px; cursor: pointer; border: none; font-weight: 600; transition: all 0.2s ease; }
+.theme-toggle:hover { background: var(--primary-hover); }
 </style>
 </head>
 <body>
@@ -54,9 +108,10 @@ body { margin:0; font-family:Arial; background:#f4f6f9; }
 
     <div class="topbar">
       <h1>Monitoring Stations</h1>
-      <div>
+      <div style="display:flex; gap:10px;">
         <button class="button gray">Filter</button>
         <button class="button green">+ Add New Station</button>
+        <button class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
       </div>
     </div>
 
@@ -114,6 +169,35 @@ body { margin:0; font-family:Arial; background:#f4f6f9; }
 
   </div>
 </div>
+script>
+function toggleTheme() {
+  let body = document.body;
+  let btn = event.target;
+  
+  body.classList.toggle("light");
+  
+  if(body.classList.contains("light")) {
+    localStorage.setItem("theme", "light");
+    btn.textContent = "☀️ Light Mode";
+  } else {
+    localStorage.setItem("theme", "dark");
+    btn.textContent = "🌙 Dark Mode";
+  }
+}
 
+window.onload = function() {
+  let theme = localStorage.getItem("theme");
+  let btn = document.querySelector(".theme-toggle");
+  
+  if(theme === "light") {
+    document.body.classList.add("light");
+    if(btn) btn.textContent = "☀️ Light Mode";
+  } else {
+    if(btn) btn.textContent = "🌙 Dark Mode";
+  }
+}
+</script>
+
+<
 </body>
 </html>
