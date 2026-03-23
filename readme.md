@@ -101,5 +101,4 @@ vayu/
 - **Error Handling:** Built-in dev and prod error reporting modes internally configured in the API endpoints.
 
 ---
-
 *Thank you for exploring Vayu! Let's build a cleaner, greener future.*
