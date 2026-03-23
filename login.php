@@ -230,7 +230,7 @@
 
       <div class="forgot-link"><a href="forgot_password.php">Forgot Password?</a></div>
 
-      <!-- CAPTCHA (simple math) -->
+      <!-- CAPTCHA (simple math) AND SOMETHINGS -->
       <div class="field" id="captchaField">
         <label>Security Check <span class="req">*</span> — What is <span id="captchaQ" style="color:var(--nav-bg);font-weight:700;"></span>?</label>
         <div class="field-wrap">
