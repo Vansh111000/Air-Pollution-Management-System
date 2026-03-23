@@ -95,7 +95,7 @@
     .forgot-link a{font-size:0.78rem;color:var(--accent);text-decoration:none;}
     .forgot-link a:hover{text-decoration:underline;}
 
-    /* attempts warning */
+    /* attempts warning *---Caution---/
     .attempts-bar{
       height:4px;background:#eee;border-radius:2px;margin-bottom:16px;overflow:hidden;display:none;
     }
