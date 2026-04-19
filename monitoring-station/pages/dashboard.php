@@ -106,7 +106,7 @@ function loadWorkerFeedback() {
     const container = document.getElementById('workerFeedbackContainer');
     container.innerHTML = '<div style="color:var(--color-text-secondary); text-align:center;">Loading feedback...</div>';
 
-    fetch(`../api/feedback/list.php?sort=${filter}`)
+    fetch(`../api/feedback/list.php?sort=${filter}`, { credentials: 'same-origin' })
         .then(r => r.json())
         .then(data => {
             if(data.success) {

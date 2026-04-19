@@ -2,8 +2,8 @@
 session_start();
 header('Content-Type: application/json');
 
-require_once '../db.php';
-require_once '../middleware/auth.php';
+require_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/../middleware/auth.php';
 
 // Only logged in users (admin/station_worker) can view feedback. Normal users can't view all feedbacks.
 // Wait, actually station workers and admins need it.

@@ -780,7 +780,7 @@ function buildTable(filter) {
   else sorted.sort((a,b) => b.aqi - a.aqi);
 
   const primaryPollutant = (city) => {
-    const vals = { PM2.5:city.pm25, PM10:city.pm10, NO₂:city.no2, SO₂:city.so2, CO:city.co*10, Ozone:city.ozone };
+    const vals = { 'PM2.5':city.pm25, 'PM10':city.pm10, 'NO₂':city.no2, 'SO₂':city.so2, 'CO':city.co*10, 'Ozone':city.ozone };
     return Object.entries(vals).sort((a,b)=>b[1]-a[1])[0][0];
   };
 
@@ -831,6 +831,7 @@ async function submitFeedback(e) {
     const res = await fetch('api/feedback/submit.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
       body: JSON.stringify({ message, rating })
     });
     const data = await res.json();

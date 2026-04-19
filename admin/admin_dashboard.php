@@ -861,6 +861,46 @@ document.getElementById('updateAreaForm').addEventListener('submit', function(e)
 
 // Load areas on startup
 document.addEventListener('DOMContentLoaded', loadAreas);
+
+// ==========================================
+// FEEDBACK API LOGIC
+// ==========================================
+function loadFeedback() {
+    const filter = document.getElementById('fbFilter').value;
+    const container = document.getElementById('feedbackContainer');
+    container.innerHTML = '<div class="empty">Loading feedback...</div>';
+
+    fetch(`../api/feedback/list.php?sort=${filter}`, { credentials: 'same-origin' })
+        .then(r => r.json())
+        .then(data => {
+            if(data.success) {
+                if(data.data.length === 0) {
+                    container.innerHTML = '<div class="empty">📭 No feedback submitted yet.</div>';
+                    return;
+                }
+                container.innerHTML = data.data.map(fb => {
+                    const stars = '⭐'.repeat(fb.rating || 0) + '☆'.repeat(5 - (fb.rating || 0));
+                    return `
+                    <div class="fb-card">
+                        <div class="fb-header">
+                            <div class="fb-user">👤 ${fb.user_name || 'Anonymous User'} <span style="font-size:0.75rem; color:#888;">(${fb.user_email || 'No email'})</span></div>
+                            <div class="fb-date">🕒 ${new Date(fb.created_at).toLocaleString()}</div>
+                        </div>
+                        <div class="fb-rating" title="${fb.rating}/5 Rating">${stars}</div>
+                        <div class="fb-msg">${fb.message.replace(/</g, "&lt;")}</div>
+                    </div>`;
+                }).join('');
+            } else {
+                container.innerHTML = `<div class="empty" style="color:red;">Error: ${data.message}</div>`;
+            }
+        })
+        .catch(err => {
+            container.innerHTML = `<div class="empty" style="color:red;">Failed to load feedback.</div>`;
+        });
+}
+
+// Load feedback on startup
+document.addEventListener('DOMContentLoaded', loadFeedback);
 </script>
 </body>
 </html>

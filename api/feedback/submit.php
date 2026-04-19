@@ -2,8 +2,8 @@
 session_start();
 header('Content-Type: application/json');
 
-require_once '../db.php';
-require_once '../middleware/auth.php';
+require_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/../middleware/auth.php';
 
 // Ensure the user is logged in
 requireLogin(true);
