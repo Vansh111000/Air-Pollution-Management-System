@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stations - APMS</title>
+  <link rel="stylesheet" href="../assets/css/admin.css">
+  <style>
+    .stations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .station-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .station-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 10px 30px rgba(56, 189, 248, 0.2);
+      transform: translateY(-5px);
+    }
+
+    .station-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .station-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .station-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 15px 0;
+      padding: 15px 0;
+      border-top: 1px solid var(--card-border);
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .info-label {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+    }
+
+    .info-value {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .battery-bar {
+      background: var(--card-border);
+      border-radius: 8px;
+      overflow: hidden;
+      height: 8px;
+      margin-bottom: 15px;
+    }
+
+    .battery-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--success), var(--warning));
+      border-radius: 8px;
+    }
+
+    .card-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .card-action-btn {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--card-border);
+      background: transparent;
+      color: var(--primary);
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+
+    .card-action-btn:hover {
+      background: rgba(56, 189, 248, 0.1);
+      border-color: var(--primary);
+    }
+
+    .card-action-btn.danger {
+      color: var(--danger);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .card-action-btn.danger:hover {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: var(--danger);
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2>APMS</h2>
+      <nav class="sidebar-nav">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="alerts.html">Alerts</a></li>
+        <li><a href="stations.html" class="active">Stations</a></li>
+        <li><a href="settings.html">Settings</a></li>
+        <li style="margin-top: 30px; border-top: 1px solid var(--card-border); padding-top: 20px;">
+          <a href="../logout.php" style="color: var(--danger);">Logout</a>
+        </li>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+      <div class="page-header">
+        <div>
+          <h1>Monitoring Stations</h1>
+          <p style="color: var(--text-secondary);">Manage and monitor all stations</p>
+        </div>
+        <div class="header-actions">
+          <input type="search" class="search-bar" id="searchStation" placeholder="Search stations...">
+          <button class="btn btn-primary" onclick="openAddStation()">+ Add Station</button>
+          <button class="theme-toggle" onclick="toggleTheme()">🌙 Dark</button>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 25px;">
+        <div class="stat-item">
+          <div class="stat-value">128</div>
+          <div class="stat-label">Total Stations</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" style="color: var(--success);">112</div>
+          <div class="stat-label">Active</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" style="color: var(--warning);">10</div>
+          <div class="stat-label">Maintenance</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" style="color: var(--danger);">6</div>
+          <div class="stat-label">Offline</div>
+        </div>
+      </div>
+
+      <!-- Stations Grid -->
+      <div id="stationsContainer" class="stations-grid">
+        <!-- Station 1 -->
+        <div class="station-card" onclick="viewStationDetails('STA-4092')">
+          <div class="station-header">
+            <div class="station-name">Everglades</div>
+            <span class="status-pill status-active">Active</span>
+          </div>
+
+          <div class="station-info">
+            <div class="info-item">
+              <div class="info-label">Station ID</div>
+              <div class="info-value">STA-4092</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Region</div>
+              <div class="info-value">Florida, US</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Admin</div>
+              <div class="info-value">John Doe</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Sensors</div>
+              <div class="info-value">24</div>
+            </div>
+          </div>
+
+          <div class="info-label" style="margin-bottom: 5px;">Battery Level</div>
+          <div class="battery-bar">
+            <div class="battery-fill" style="width: 92%;"></div>
+          </div>
+
+          <div class="card-actions">
+            <button class="card-action-btn" onclick="viewStationDetails('STA-4092'); event.stopPropagation();">View</button>
+            <button class="card-action-btn" onclick="event.preventDefault(); editStation('STA-4092'); event.stopPropagation();">Edit</button>
+          </div>
+        </div>
+
+        <!-- Station 2 -->
+        <div class="station-card" onclick="viewStationDetails('STA-1022')">
+          <div class="station-header">
+            <div class="station-name">Rocky Mountain</div>
+            <span class="status-pill status-maintenance">Maintenance</span>
+          </div>
+
+          <div class="station-info">
+            <div class="info-item">
+              <div class="info-label">Station ID</div>
+              <div class="info-value">STA-1022</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Region</div>
+              <div class="info-value">Colorado, US</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Admin</div>
+              <div class="info-value">Sarah Miller</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Sensors</div>
+              <div class="info-value">20</div>
+            </div>
+          </div>
+
+          <div class="info-label" style="margin-bottom: 5px;">Battery Level</div>
+          <div class="battery-bar">
+            <div class="battery-fill" style="width: 14%;"></div>
+          </div>
+
+          <div class="card-actions">
+            <button class="card-action-btn" onclick="viewStationDetails('STA-1022'); event.stopPropagation();">View</button>
+            <button class="card-action-btn" onclick="event.stopPropagation(); editStation('STA-1022');">Edit</button>
+          </div>
+        </div>
+
+        <!-- Station 3 -->
+        <div class="station-card" onclick="viewStationDetails('STA-8831')">
+          <div class="station-header">
+            <div class="station-name">Olympic Rainforest</div>
+            <span class="status-pill status-offline">Offline</span>
+          </div>
+
+          <div class="station-info">
+            <div class="info-item">
+              <div class="info-label">Station ID</div>
+              <div class="info-value">STA-8831</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Region</div>
+              <div class="info-value">Washington, US</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Admin</div>
+              <div class="info-value">Unassigned</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Sensors</div>
+              <div class="info-value">18</div>
+            </div>
+          </div>
+
+          <div class="info-label" style="margin-bottom: 5px;">Battery Level</div>
+          <div class="battery-bar">
+            <div class="battery-fill" style="width: 5%;"></div>
+          </div>
+
+          <div class="card-actions">
+            <button class="card-action-btn" onclick="viewStationDetails('STA-8831'); event.stopPropagation();">View</button>
+            <button class="card-action-btn danger" onclick="event.stopPropagation(); deleteStation('STA-8831');">Delete</button>
+          </div>
+        </div>
+
+        <!-- Station 4 -->
+        <div class="station-card" onclick="viewStationDetails('STA-2210')">
+          <div class="station-header">
+            <div class="station-name">Sonoran Desert</div>
+            <span class="status-pill status-active">Active</span>
+          </div>
+
+          <div class="station-info">
+            <div class="info-item">
+              <div class="info-label">Station ID</div>
+              <div class="info-value">STA-2210</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Region</div>
+              <div class="info-value">Arizona, US</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Admin</div>
+              <div class="info-value">Robert Chen</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Sensors</div>
+              <div class="info-value">22</div>
+            </div>
+          </div>
+
+          <div class="info-label" style="margin-bottom: 5px;">Battery Level</div>
+          <div class="battery-bar">
+            <div class="battery-fill" style="width: 65%;"></div>
+          </div>
+
+          <div class="card-actions">
+            <button class="card-action-btn" onclick="viewStationDetails('STA-2210'); event.stopPropagation();">View</button>
+            <button class="card-action-btn" onclick="event.stopPropagation(); editStation('STA-2210');">Edit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Theme Toggle
+    function toggleTheme() {
+      let body = document.body;
+      let btn = event.target;
+      
+      body.classList.toggle("light");
+      
+      if(body.classList.contains("light")) {
+        localStorage.setItem("adminTheme", "light");
+        btn.textContent = "☀️ Light";
+      } else {
+        localStorage.setItem("adminTheme", "dark");
+        btn.textContent = "🌙 Dark";
+      }
+    }
+
+    window.onload = function() {
+      let theme = localStorage.getItem("adminTheme");
+      let btn = document.querySelector(".theme-toggle");
+      
+      if(theme === "light") {
+        document.body.classList.add("light");
+        if(btn) btn.textContent = "☀️ Light";
+      } else {
+        if(btn) btn.textContent = "🌙 Dark";
+      }
+
+      // Search functionality
+      document.getElementById('searchStation').addEventListener('keyup', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const stations = document.querySelectorAll('.station-card');
+        
+        stations.forEach(station => {
+          const text = station.textContent.toLowerCase();
+          station.style.display = text.includes(searchTerm) ? '' : 'none';
+        });
+      });
+    }
+
+    function viewStationDetails(stationId) {
+      window.location.href = `station-details.html?id=${stationId}`;
+    }
+
+    function editStation(stationId) {
+      alert('Edit form for ' + stationId + ' would be shown here');
+    }
+
+    function deleteStation(stationId) {
+      if (confirm('Are you sure you want to delete station ' + stationId + '?')) {
+        alert('Station ' + stationId + ' deleted successfully');
+        location.reload();
+      }
+    }
+
+    function openAddStation() {
+      alert('Add new station form would be shown here');
+    }
+  </script>
+</body>
+</html>

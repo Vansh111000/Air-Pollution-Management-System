@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alerts - APMS</title>
+  <link rel="stylesheet" href="../assets/css/admin.css">
+  <style>
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 500;
+    }
+
+    .filter-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .filter-btn:hover {
+      border-color: var(--primary);
+    }
+
+    .alert-row {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 16px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      display: grid;
+      grid-template-columns: auto 1fr auto auto;
+      gap: 20px;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+
+    .alert-row:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.1);
+    }
+
+    .alert-icon {
+      font-size: 1.5rem;
+      min-width: 30px;
+      text-align: center;
+    }
+
+    .alert-content {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .alert-title {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .alert-meta {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+
+    .alert-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-btn {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: none;
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--primary);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:hover {
+      background: rgba(56, 189, 248, 0.2);
+    }
+
+    @media (max-width: 768px) {
+      .alert-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .alert-actions {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2>APMS</h2>
+      <nav class="sidebar-nav">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="alerts.html" class="active">Alerts</a></li>
+        <li><a href="stations.html">Stations</a></li>
+        <li><a href="settings.html">Settings</a></li>
+        <li style="margin-top: 30px; border-top: 1px solid var(--card-border); padding-top: 20px;">
+          <a href="../logout.php" style="color: var(--danger);">Logout</a>
+        </li>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+      <div class="page-header">
+        <div>
+          <h1>Alerts & Notifications</h1>
+          <p style="color: var(--text-secondary);">Monitor and manage system alerts</p>
+        </div>
+        <div class="header-actions">
+          <input type="search" class="search-bar" id="searchAlerts" placeholder="Search alerts...">
+          <button class="theme-toggle" onclick="toggleTheme()">🌙 Dark</button>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all" onclick="filterAlerts('all', this)">All</button>
+        <button class="filter-btn" data-filter="critical" onclick="filterAlerts('critical', this)">Critical</button>
+        <button class="filter-btn" data-filter="warning" onclick="filterAlerts('warning', this)">Warning</button>
+        <button class="filter-btn" data-filter="info" onclick="filterAlerts('info', this)">Info</button>
+        <button class="filter-btn" onclick="clearFilters()">Clear Filters</button>
+      </div>
+
+      <!-- Summary Stats -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 25px;">
+        <div class="stat-item">
+          <div class="stat-value" style="color: var(--danger);">4</div>
+          <div class="stat-label">Critical</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" style="color: var(--warning);">12</div>
+          <div class="stat-label">Warnings</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" style="color: var(--success);">28</div>
+          <div class="stat-label">Resolved</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" style="color: #3b82f6;">3</div>
+          <div class="stat-label">Pending</div>
+        </div>
+      </div>
+
+      <!-- Alerts List -->
+      <div id="alertsList">
+        <!-- Critical Alert -->
+        <div class="alert-row" data-severity="critical">
+          <div class="alert-icon">🔴</div>
+          <div class="alert-content">
+            <div class="alert-title">Power Supply Failure</div>
+            <div class="alert-meta">Station Alpha-9 • Central Zone • <span class="badge badge-critical">Critical</span></div>
+          </div>
+          <div class="badge badge-info">Pending</div>
+          <div class="alert-actions">
+            <button class="action-btn" onclick="viewAlert(this)">View</button>
+            <button class="action-btn" style="color: var(--success);" onclick="resolveAlert(this)">Resolve</button>
+          </div>
+        </div>
+
+        <!-- Warning Alert -->
+        <div class="alert-row" data-severity="warning">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-content">
+            <div class="alert-title">Sensor Drift Detected</div>
+            <div class="alert-meta">Station Gamma-2 • North Sector • <span class="badge badge-warning">Warning</span></div>
+          </div>
+          <div class="status-pill" style="background: rgba(59, 130, 246, 0.2); color: #3b82f6;">
+            <span style="width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; display: inline-block;"></span>
+            Investigating
+          </div>
+          <div class="alert-actions">
+            <button class="action-btn" onclick="viewAlert(this)">View</button>
+            <button class="action-btn" style="color: var(--success);" onclick="resolveAlert(this)">Resolve</button>
+          </div>
+        </div>
+
+        <!-- Info Alert -->
+        <div class="alert-row" data-severity="info">
+          <div class="alert-icon">ℹ️</div>
+          <div class="alert-content">
+            <div class="alert-title">Connectivity Blip</div>
+            <div class="alert-meta">Station Zeta-5 • Harbor • <span class="badge badge-info">Info</span></div>
+          </div>
+          <div class="badge badge-success">Resolved</div>
+          <div class="alert-actions">
+            <button class="action-btn" onclick="viewAlert(this)">View</button>
+            <button class="action-btn" style="color: var(--danger);" onclick="reopenAlert(this)">Reopen</button>
+          </div>
+        </div>
+
+        <!-- Critical Alert -->
+        <div class="alert-row" data-severity="critical">
+          <div class="alert-icon">🔴</div>
+          <div class="alert-content">
+            <div class="alert-title">Leak Detected</div>
+            <div class="alert-meta">Station Delta-4 • Industrial Park • <span class="badge badge-critical">Critical</span></div>
+          </div>
+          <div class="badge badge-info">Pending</div>
+          <div class="alert-actions">
+            <button class="action-btn" onclick="viewAlert(this)">View</button>
+            <button class="action-btn" style="color: var(--success);" onclick="resolveAlert(this)">Resolve</button>
+          </div>
+        </div>
+
+        <!-- Warning Alert -->
+        <div class="alert-row" data-severity="warning">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-content">
+            <div class="alert-title">Fan Malfunction</div>
+            <div class="alert-meta">Station Epsilon-1 • East Ridge • <span class="badge badge-warning">Warning</span></div>
+          </div>
+          <div class="badge badge-success">Resolved</div>
+          <div class="alert-actions">
+            <button class="action-btn" onclick="viewAlert(this)">View</button>
+            <button class="action-btn" style="color: var(--danger);" onclick="reopenAlert(this)">Reopen</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Theme Toggle
+    function toggleTheme() {
+      let body = document.body;
+      let btn = event.target;
+      
+      body.classList.toggle("light");
+      
+      if(body.classList.contains("light")) {
+        localStorage.setItem("adminTheme", "light");
+        btn.textContent = "☀️ Light";
+      } else {
+        localStorage.setItem("adminTheme", "dark");
+        btn.textContent = "🌙 Dark";
+      }
+    }
+
+    window.onload = function() {
+      let theme = localStorage.getItem("adminTheme");
+      let btn = document.querySelector(".theme-toggle");
+      
+      if(theme === "light") {
+        document.body.classList.add("light");
+        if(btn) btn.textContent = "☀️ Light";
+      } else {
+        if(btn) btn.textContent = "🌙 Dark";
+      }
+
+      // Search functionality
+      document.getElementById('searchAlerts').addEventListener('keyup', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const alerts = document.querySelectorAll('.alert-row');
+        
+        alerts.forEach(alert => {
+          const text = alert.textContent.toLowerCase();
+          alert.style.display = text.includes(searchTerm) ? '' : 'none';
+        });
+      });
+    }
+
+    function filterAlerts(severity, btn) {
+      const alerts = document.querySelectorAll('.alert-row');
+      
+      alerts.forEach(alert => {
+        if (severity === 'all') {
+          alert.style.display = '';
+        } else {
+          alert.style.display = alert.getAttribute('data-severity') === severity ? '' : 'none';
+        }
+      });
+
+      // Update active button
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function clearFilters() {
+      document.querySelectorAll('.alert-row').forEach(alert => {
+        alert.style.display = '';
+      });
+      document.getElementById('searchAlerts').value = '';
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.filter-btn')[0].classList.add('active');
+    }
+
+    function viewAlert(btn) {
+      const alertRow = btn.closest('.alert-row');
+      const title = alertRow.querySelector('.alert-title').textContent;
+      alert('Viewing: ' + title + '\n\nFull details would be shown here');
+    }
+
+    function resolveAlert(btn) {
+      const alertRow = btn.closest('.alert-row');
+      const badgeEl = alertRow.children[2];
+      badgeEl.innerHTML = '<span class="badge badge-success">Resolved</span>';
+      btn.textContent = 'Reopen';
+      btn.style.color = 'var(--danger)';
+      btn.onclick = function() { reopenAlert(this); };
+    }
+
+    function reopenAlert(btn) {
+      const alertRow = btn.closest('.alert-row');
+      const badgeEl = alertRow.children[2];
+      badgeEl.innerHTML = '<span class="badge badge-info">Pending</span>';
+      btn.textContent = 'Resolve';
+      btn.style.color = 'var(--success)';
+      btn.onclick = function() { resolveAlert(this); };
+    }
+  </script>
+</body>
+</html>
