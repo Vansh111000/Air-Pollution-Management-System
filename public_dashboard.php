@@ -5,10 +5,10 @@ requireLogin(); // Restrict to logged-in users only
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<html lang="en">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#0d2137"/>
   <title>VayuDarpan – Public Dashboard</title>
 
   <!-- Fonts -->
@@ -34,7 +34,25 @@ requireLogin(); // Restrict to logged-in users only
       --border: #dde4ea;
     }
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Noto Sans',sans-serif; background:#f0f4f8; color:var(--text); }
+
+    body {
+      font-family:'Noto Sans',sans-serif;
+      background:#f0f4f8;
+      color:var(--text);
+      min-height:100vh;
+      line-height:1.5;
+    }
+
+    /* Cloudy backdrop — matches catalogue / landing */
+    body::before {
+      content:'';
+      position:fixed; inset:0; z-index:-1;
+      background:
+        radial-gradient(ellipse 800px 300px at 10% 20%, rgba(255,255,255,0.95) 0%, transparent 70%),
+        radial-gradient(ellipse 600px 250px at 80% 10%, rgba(224,242,254,0.9) 0%, transparent 60%),
+        radial-gradient(ellipse 700px 200px at 50% 80%, rgba(232,245,233,0.8) 0%, transparent 60%),
+        linear-gradient(160deg, #e8f4fd 0%, #f5faff 40%, #edf7ee 100%);
+    }
 
     /* ── NAV ── */
     nav {
@@ -46,7 +64,7 @@ requireLogin(); // Restrict to logged-in users only
     }
     .nav-logo { font-family:'Teko',sans-serif; font-size:1.6rem; color:var(--accent); letter-spacing:2px; }
     .nav-logo span { color:#fff; }
-    .nav-links { display:flex; gap:6px; }
+    .nav-links { display:flex; gap:6px; flex-wrap:wrap; align-items:center; justify-content:flex-end; }
     .nav-links a {
       color:#cde8f5; text-decoration:none;
       font-family:'Rajdhani',sans-serif; font-weight:600; font-size:0.95rem;
@@ -54,73 +72,125 @@ requireLogin(); // Restrict to logged-in users only
       transition:background 0.2s,color 0.2s; text-transform:uppercase;
     }
     .nav-links a:hover { background:var(--accent); color:#fff; }
+    .nav-links a:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
     .nav-links a.active { background:var(--accent); color:#fff; }
     .nav-links a.logout { border:1px solid #e53935; color:#ff7070; }
     .nav-links a.logout:hover { background:#e53935; color:#fff; }
 
     /* ── PAGE HEADER ── */
     .page-header {
-      background:linear-gradient(135deg, var(--nav-bg) 0%, #1a3a5c 100%);
-      padding:22px 40px;
+      position:relative;
+      overflow:hidden;
+      background:linear-gradient(135deg, var(--nav-bg) 0%, #153a56 55%, #1a3a5c 100%);
+      padding:28px 40px 32px;
       display:flex; align-items:center; justify-content:space-between;
+      gap:24px;
+      flex-wrap:wrap;
+      border-bottom:3px solid rgba(0,188,212,0.35);
+      box-shadow:0 8px 32px rgba(13,33,55,0.25);
+    }
+    .page-header::after {
+      content:'';
+      position:absolute; right:-80px; top:-40%;
+      width:320px; height:320px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(0,188,212,0.12) 0%, transparent 70%);
+      pointer-events:none;
+    }
+    .page-header-inner { position:relative; z-index:1; max-width:720px; }
+    .page-header-kicker {
+      font-family:'Rajdhani',sans-serif;
+      font-size:0.72rem;
+      font-weight:700;
+      letter-spacing:3px;
+      text-transform:uppercase;
+      color:rgba(124,184,212,0.95);
+      margin-bottom:6px;
     }
     .page-header h1 {
-      font-family:'Teko',sans-serif; font-size:2rem;
-      color:#fff; letter-spacing:2px;
+      font-family:'Teko',sans-serif; font-size:clamp(1.75rem, 4vw, 2.35rem);
+      color:#fff; letter-spacing:2px; line-height:1.1;
     }
     .page-header h1 span { color:var(--accent); }
-    .page-header p { color:#7cb8d4; font-size:0.82rem; margin-top:3px; }
+    .page-header p { color:#9ec9dc; font-size:0.9rem; margin-top:8px; max-width:520px; line-height:1.55; }
+    .header-actions { position:relative; z-index:1; display:flex; flex-direction:column; align-items:flex-end; gap:10px; }
     .live-badge {
-      display:flex; align-items:center; gap:8px;
-      background:rgba(0,200,83,0.15); border:1px solid var(--good);
-      border-radius:20px; padding:6px 16px;
+      display:flex; align-items:center; gap:10px;
+      background:rgba(0,200,83,0.12);
+      border:1px solid rgba(0,200,83,0.55);
+      border-radius:999px; padding:8px 18px;
+      box-shadow:0 4px 14px rgba(0,0,0,0.12);
     }
     .live-dot {
-      width:9px; height:9px; border-radius:50%;
-      background:var(--good); animation:pulse 1.5s infinite;
+      width:10px; height:10px; border-radius:50%;
+      background:var(--good);
+      box-shadow:0 0 0 3px rgba(0,200,83,0.25);
+      animation:pulse 1.5s ease-in-out infinite;
     }
     @keyframes pulse {
       0%,100% { opacity:1; transform:scale(1); }
-      50%      { opacity:0.4; transform:scale(1.4); }
+      50%      { opacity:0.55; transform:scale(1.15); }
     }
-    .live-badge span { color:var(--good); font-family:'Rajdhani',sans-serif; font-weight:700; font-size:0.85rem; letter-spacing:1px; }
+    @media (prefers-reduced-motion: reduce) {
+      .live-dot { animation:none; }
+    }
+    .live-badge span { color:#b9f6ca; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:0.82rem; letter-spacing:2px; }
+    .header-meta {
+      font-family:'Rajdhani',sans-serif;
+      font-size:0.75rem;
+      color:rgba(158,201,220,0.85);
+      letter-spacing:0.5px;
+    }
 
     /* ── WRAPPER ── */
-    .dashboard-wrapper { max-width:1300px; margin:28px auto; padding:0 24px; }
+    .dashboard-wrapper { max-width:1320px; margin:32px auto 48px; padding:0 28px; }
 
-    /* ── SECTION TITLE ── */
-    .section-title {
-      font-family:'Teko',sans-serif; font-size:1.6rem;
-      color:var(--nav-bg); border-left:5px solid var(--accent);
-      padding-left:12px; margin-bottom:16px; letter-spacing:1px;
+    /* ── SECTION HEADERS (catalogue-style) ── */
+    .section-block { margin-bottom:36px; }
+    .section-header { margin-bottom:20px; }
+    .section-header h2 {
+      font-family:'Teko',sans-serif; font-size:clamp(1.45rem, 3vw, 1.95rem);
+      color:var(--nav-bg); letter-spacing:1px;
+    }
+    .section-header h2 span { color:var(--accent); }
+    .section-header p { color:#555; font-size:0.88rem; margin-top:6px; line-height:1.55; max-width:640px; }
+    .section-divider {
+      height:3px; width:56px;
+      background:linear-gradient(90deg, var(--accent), transparent);
+      margin:10px 0 0; border-radius:2px;
     }
 
     /* ══════════════════════════════
        SECTION 1: MAP + CITY INFO
     ══════════════════════════════ */
-    .map-section { display:flex; gap:20px; margin-bottom:28px; align-items:flex-start; }
+    .map-section {
+      display:flex; gap:22px; align-items:stretch;
+    }
 
     /* city info panel (left) */
     .city-info-panel {
-      width:260px; flex-shrink:0;
+      width:280px; flex-shrink:0;
       display:flex; flex-direction:column; gap:14px;
     }
     .city-card {
-      background:#fff; border-radius:12px;
-      box-shadow:0 2px 12px rgba(0,0,0,0.08);
+      background:#fff; border-radius:16px;
+      box-shadow:0 4px 24px rgba(13,33,55,0.08);
+      border:1px solid rgba(221,228,234,0.9);
       overflow:hidden;
+      transition:box-shadow 0.25s ease, transform 0.25s ease;
     }
+    .city-card:hover { box-shadow:0 8px 32px rgba(13,33,55,0.12); }
     .city-card-header {
-      padding:14px 16px 10px;
-      background:linear-gradient(135deg,#e3f2fd,#e8f5e9);
+      padding:16px 18px 12px;
+      background:linear-gradient(135deg, #e3f2fd 0%, #e8f5e9 100%);
       border-bottom:1px solid var(--border);
     }
     .city-card-header h3 {
       font-family:'Rajdhani',sans-serif; font-weight:700;
-      font-size:1.1rem; color:var(--nav-bg);
+      font-size:1.08rem; color:var(--nav-bg);
     }
-    .city-card-header small { font-size:0.72rem; color:#888; }
-    .city-card-body { padding:14px 16px; }
+    .city-card-header small { font-size:0.72rem; color:#6b7b8a; }
+    .city-card-body { padding:16px 18px; min-height:120px; }
 
     .aqi-display {
       display:flex; align-items:center; gap:12px; margin-bottom:12px;
@@ -148,9 +218,12 @@ requireLogin(); // Restrict to logged-in users only
       gap:8px; margin-top:4px;
     }
     .stat-box {
-      background:var(--card); border-radius:8px;
-      padding:8px 10px; text-align:center;
+      background:var(--card); border-radius:10px;
+      padding:10px 10px; text-align:center;
+      border:1px solid rgba(221,228,234,0.6);
+      transition:background 0.2s, border-color 0.2s;
     }
+    .stat-box:hover { background:#fff; border-color:rgba(0,188,212,0.35); }
     .stat-box .s-val {
       font-family:'Teko',sans-serif; font-size:1.2rem;
       color:var(--nav-bg);
@@ -171,38 +244,64 @@ requireLogin(); // Restrict to logged-in users only
     }
 
     .placeholder-msg {
-      text-align:center; padding:32px 16px;
-      color:#aaa; font-size:0.85rem; line-height:1.8;
+      text-align:center; padding:28px 14px 32px;
+      color:#7a8a99; font-size:0.86rem; line-height:1.75;
     }
-    .placeholder-msg .big { font-size:2rem; margin-bottom:8px; }
+    .placeholder-icon {
+      width:72px; height:72px; margin:0 auto 14px;
+      border-radius:50%;
+      background:linear-gradient(145deg, rgba(0,188,212,0.12), rgba(13,33,55,0.06));
+      border:2px dashed rgba(0,188,212,0.35);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.85rem;
+    }
+    .placeholder-msg strong { display:block; color:var(--nav-bg); font-family:'Rajdhani',sans-serif; font-size:0.95rem; margin-top:4px; }
 
     /* map */
     .map-container {
-      flex:1; border-radius:14px; overflow:hidden;
-      box-shadow:0 4px 20px rgba(0,0,0,0.12);
-      border:2px solid var(--border);
+      flex:1; border-radius:16px; overflow:hidden;
+      box-shadow:0 8px 40px rgba(13,33,55,0.12);
+      border:1px solid rgba(221,228,234,0.95);
       min-height:460px;
+      position:relative;
+    }
+    .map-container::before {
+      content:'';
+      position:absolute; inset:0; pointer-events:none; z-index:2;
+      border-radius:16px;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,0.4);
     }
     #indiaMap { width:100%; height:460px; z-index: 1; }
 
     /* ══════════════════════════════
        SECTION 2: PIE CHART + ALERTS
     ══════════════════════════════ */
-    .analytics-section { display:flex; gap:20px; margin-bottom:28px; }
+    .analytics-section { display:flex; gap:22px; align-items:stretch; }
 
     .pie-card {
-      flex:1.2; background:#fff; border-radius:14px;
-      padding:22px; box-shadow:0 2px 12px rgba(0,0,0,0.08);
+      flex:1.2; background:#fff; border-radius:16px;
+      padding:24px 24px 26px;
+      box-shadow:0 4px 24px rgba(13,33,55,0.08);
+      border:1px solid rgba(221,228,234,0.9);
+      position:relative;
+      overflow:hidden;
+    }
+    .pie-card::before {
+      content:'';
+      position:absolute; top:0; left:0; right:0; height:4px;
+      background:linear-gradient(90deg, var(--accent), #4dd0e1 50%, transparent);
+      opacity:0.9;
     }
     .pie-card h3 {
       font-family:'Rajdhani',sans-serif; font-weight:700;
-      font-size:1rem; color:var(--nav-bg); letter-spacing:1px;
-      text-transform:uppercase; margin-bottom:16px;
+      font-size:0.95rem; color:var(--nav-bg); letter-spacing:1.2px;
+      text-transform:uppercase; margin-bottom:18px;
+      padding-top:4px;
     }
     .pie-wrap {
-      display:flex; align-items:center; gap:20px;
+      display:flex; align-items:center; gap:24px; flex-wrap:wrap;
     }
-    .pie-wrap canvas { max-width:200px; max-height:200px; }
+    .pie-wrap canvas { max-width:220px; max-height:220px; }
     .pie-legend { flex:1; }
     .pie-legend-item {
       display:flex; align-items:center; gap:8px;
@@ -217,12 +316,20 @@ requireLogin(); // Restrict to logged-in users only
       flex:1; display:flex; flex-direction:column; gap:14px;
     }
     .alert-card {
-      border-radius:12px; padding:18px 20px;
+      border-radius:14px; padding:18px 20px;
       display:flex; gap:14px; align-items:flex-start;
-      box-shadow:0 2px 10px rgba(0,0,0,0.07);
+      box-shadow:0 4px 18px rgba(13,33,55,0.07);
+      border:1px solid rgba(0,0,0,0.04);
+      transition:transform 0.2s ease, box-shadow 0.2s ease;
     }
+    .alert-card:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(13,33,55,0.1); }
     .alert-card.safe   { background:linear-gradient(135deg,#e8f5e9,#f1f8e9); border-left:5px solid var(--good); }
     .alert-card.danger { background:linear-gradient(135deg,#ffebee,#fff3e0); border-left:5px solid var(--severe); }
+    .alert-card.alert-general {
+      background:linear-gradient(135deg,#e3f2fd,#f0f8ff);
+      border-left:5px solid var(--accent);
+    }
+    .alert-card.alert-general .alert-content h4 { color:#0d47a1; }
     .alert-icon { font-size:2.2rem; flex-shrink:0; }
     .alert-content h4 {
       font-family:'Rajdhani',sans-serif; font-weight:700;
@@ -238,6 +345,10 @@ requireLogin(); // Restrict to logged-in users only
     }
     .safe   .alert-status { background:var(--good);   color:#fff; }
     .danger .alert-status { background:var(--severe); color:#fff; }
+    .alert-status.status-general { background:var(--accent); color:#fff; }
+    .alert-status.status-severe { background:var(--severe); color:#fff; }
+    .alert-status.status-moderate { background:var(--moderate); color:#3d2800; }
+    .alert-status.status-good-aqi { background:var(--good); color:#fff; }
 
     /* ══════════════════════════════
        SECTION 3: CATEGORIES
@@ -245,35 +356,48 @@ requireLogin(); // Restrict to logged-in users only
     .categories-section { margin-bottom:40px; }
 
     .cat-tabs {
-      display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px;
+      display:flex; gap:10px; flex-wrap:wrap; margin-bottom:22px;
     }
     .cat-tab {
-      padding:8px 20px; border-radius:20px; border:2px solid var(--border);
+      padding:9px 18px; border-radius:999px; border:2px solid var(--border);
       background:#fff; font-family:'Rajdhani',sans-serif; font-weight:600;
-      font-size:0.88rem; letter-spacing:0.5px; cursor:pointer;
+      font-size:0.86rem; letter-spacing:0.5px; cursor:pointer;
       transition:all 0.2s; color:var(--text);
+      box-shadow:0 2px 8px rgba(13,33,55,0.04);
     }
-    .cat-tab:hover { border-color:var(--accent); color:var(--accent); }
-    .cat-tab.active { background:var(--nav-bg); color:#fff; border-color:var(--nav-bg); }
+    .cat-tab:hover { border-color:var(--accent); color:var(--accent); transform:translateY(-1px); }
+    .cat-tab:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+    .cat-tab.active {
+      background:linear-gradient(135deg, var(--nav-bg), #1a3a5c);
+      color:#fff; border-color:transparent;
+      box-shadow:0 4px 14px rgba(13,33,55,0.2);
+    }
 
     .cat-content { display:none; }
     .cat-content.active { display:block; }
 
-    .city-table-wrap {
-      background:#fff; border-radius:12px;
-      box-shadow:0 2px 12px rgba(0,0,0,0.07); overflow:hidden;
+    .table-scroll {
+      background:#fff; border-radius:14px;
+      box-shadow:0 4px 24px rgba(13,33,55,0.07);
+      border:1px solid rgba(221,228,234,0.9);
+      overflow:auto;
+      max-height:min(70vh, 640px);
     }
+    .city-table-wrap { min-width:720px; }
     table { width:100%; border-collapse:collapse; }
-    thead tr { background:var(--nav-bg); }
+    thead tr { background:linear-gradient(180deg, #0d2137 0%, #0a1929 100%); }
     thead th {
-      padding:12px 16px; text-align:left;
+      padding:14px 16px; text-align:left;
       font-family:'Rajdhani',sans-serif; font-weight:700;
-      font-size:0.85rem; color:#cde8f5; letter-spacing:1px;
+      font-size:0.82rem; color:#cde8f5; letter-spacing:1px;
       text-transform:uppercase;
+      position:sticky; top:0; z-index:1;
+      box-shadow:0 1px 0 rgba(255,255,255,0.06);
     }
     tbody tr { border-bottom:1px solid var(--border); transition:background 0.15s; }
-    tbody tr:hover { background:#f0f9ff; }
-    tbody td { padding:11px 16px; font-size:0.83rem; }
+    tbody tr:nth-child(even) { background:rgba(244,248,251,0.5); }
+    tbody tr:hover { background:#e8f7fc; }
+    tbody td { padding:12px 16px; font-size:0.83rem; vertical-align:top; }
     .aqi-chip {
       display:inline-block; padding:3px 12px; border-radius:12px;
       font-weight:700; font-size:0.78rem; color:#fff;
@@ -302,29 +426,75 @@ requireLogin(); // Restrict to logged-in users only
     /* footer */
     footer {
       background:var(--nav-bg); color:#7cb8d4;
-      text-align:center; padding:16px;
-      font-size:0.78rem; letter-spacing:0.5px;
+      text-align:center; padding:20px 16px 24px;
+      font-size:0.8rem; letter-spacing:0.5px;
+      border-top:3px solid rgba(0,188,212,0.25);
     }
     footer a { color:var(--accent); text-decoration:none; }
+    footer a:hover { text-decoration:underline; }
+
+    /* Responsive */
+    @media (max-width: 1100px) {
+      .map-section { flex-direction:column; }
+      .city-info-panel { width:100%; }
+    }
+    @media (max-width: 900px) {
+      .analytics-section { flex-direction:column; }
+      .pie-wrap { justify-content:center; }
+      .pie-legend { flex:1; min-width:200px; }
+    }
+    @media (max-width: 640px) {
+      nav { padding:0 16px; height:auto; min-height:56px; flex-wrap:wrap; padding-top:10px; padding-bottom:10px; }
+      .nav-links { width:100%; justify-content:flex-start; gap:4px; }
+      .nav-links a { font-size:0.82rem; padding:6px 10px; }
+      .page-header { padding:22px 20px; }
+      .header-actions { align-items:flex-start; width:100%; }
+      .dashboard-wrapper { padding:0 16px; margin:24px auto 40px; }
+      .cat-tabs { flex-wrap:nowrap; overflow-x:auto; padding-bottom:6px; -webkit-overflow-scrolling:touch; gap:8px; }
+      .cat-tabs::-webkit-scrollbar { height:4px; }
+      .cat-tabs::-webkit-scrollbar-thumb { background:var(--accent); border-radius:4px; }
+    }
 
     /* Feedback form */
-    .feedback-section { margin-top:20px; text-align:center; }
-    .feedback-btn {
-      background: var(--accent); color: #fff; border:none; padding:10px 20px;
-      font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1rem;
-      border-radius:20px; cursor:pointer; letter-spacing:1px;
-      transition:transform 0.2s; box-shadow:0 3px 10px rgba(0,0,0,0.2);
+    .feedback-section {
+      margin-top:8px;
+      padding:28px 24px 32px;
+      text-align:center;
+      background:linear-gradient(135deg, rgba(227,242,253,0.6) 0%, rgba(232,245,233,0.45) 100%);
+      border:1px solid rgba(221,228,234,0.95);
+      border-radius:16px;
+      box-shadow:0 4px 24px rgba(13,33,55,0.06);
     }
-    .feedback-btn:hover { transform:translateY(-2px); }
+    .feedback-section h3 {
+      font-family:'Teko',sans-serif; font-size:1.5rem; color:var(--nav-bg); letter-spacing:1px;
+      margin-bottom:6px;
+    }
+    .feedback-section > p { font-size:0.88rem; color:#5a6a78; margin-bottom:18px; max-width:480px; margin-left:auto; margin-right:auto; }
+    .feedback-btn {
+      background:linear-gradient(135deg, var(--accent), #26c6da);
+      color:#fff; border:none; padding:12px 28px;
+      font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1rem;
+      border-radius:999px; cursor:pointer; letter-spacing:1.5px;
+      text-transform:uppercase;
+      transition:transform 0.2s, box-shadow 0.2s;
+      box-shadow:0 6px 20px rgba(0,188,212,0.35);
+    }
+    .feedback-btn:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(0,188,212,0.4); }
+    .feedback-btn:focus-visible { outline:2px solid var(--nav-bg); outline-offset:3px; }
     .feedback-modal {
       display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-      background:rgba(0,0,0,0.5); z-index:3000; align-items:center; justify-content:center;
+      background:rgba(13,33,55,0.55);
+      backdrop-filter:blur(4px);
+      -webkit-backdrop-filter:blur(4px);
+      z-index:3000; align-items:center; justify-content:center;
+      padding:20px;
     }
     .feedback-modal.active { display:flex; }
     .feedback-card {
-      background:#fff; width:90%; max-width:400px; border-radius:14px;
-      padding:24px; box-shadow:0 10px 30px rgba(0,0,0,0.2); position:relative;
+      background:#fff; width:100%; max-width:420px; border-radius:16px;
+      padding:26px 26px 24px; box-shadow:0 20px 50px rgba(0,0,0,0.22); position:relative;
       text-align:left;
+      border:1px solid var(--border);
     }
     .feedback-card h3 { font-family:'Teko',sans-serif; font-size:1.5rem; color:var(--nav-bg); margin-bottom:10px; }
     .feedback-close { position:absolute; top:16px; right:16px; cursor:pointer; font-size:1.2rem; color:#888; }
@@ -369,20 +539,29 @@ requireLogin(); // Restrict to logged-in users only
 
 <!-- PAGE HEADER -->
 <div class="page-header">
-  <div>
+  <div class="page-header-inner">
+    <p class="page-header-kicker">National overview</p>
     <h1>Public <span>Air Quality</span> Dashboard</h1>
-    <p>Real-time AQI data across India — Click any city pin on the map for details</p>
+    <p>Explore live AQI readings across major Indian cities. Select a pin on the map to update pollutant mix, health advisories, and the city table context.</p>
   </div>
-  <div class="live-badge">
-    <div class="live-dot"></div>
-    <span>LIVE DATA</span>
+  <div class="header-actions">
+    <div class="live-badge">
+      <div class="live-dot" aria-hidden="true"></div>
+      <span>LIVE DATA</span>
+    </div>
+    <span class="header-meta">Map &amp; charts update when you pick a city</span>
   </div>
 </div>
 
 <div class="dashboard-wrapper">
 
   <!-- ══ SECTION 1: MAP + CITY INFO ══ -->
-  <div class="section-title">India AQI Map</div>
+  <section class="section-block" aria-labelledby="sec-map-heading">
+    <div class="section-header">
+      <h2 id="sec-map-heading">India <span>AQI</span> map</h2>
+      <p>Pan and zoom the map, then tap a numbered marker to load that city in the side panel and charts.</p>
+      <div class="section-divider"></div>
+    </div>
   <div class="map-section">
 
     <!-- City Info Panel -->
@@ -394,8 +573,9 @@ requireLogin(); // Restrict to logged-in users only
         </div>
         <div class="city-card-body" id="cityCardBody">
           <div class="placeholder-msg">
-            <div class="big">🗺️</div>
-            Click any city pin<br>on the map to view<br>detailed AQI data
+            <div class="placeholder-icon" aria-hidden="true">🗺️</div>
+            <strong>Choose a city</strong>
+            Click any numbered pin on the map to load AQI, weather, and pollutant details here.
           </div>
         </div>
       </div>
@@ -403,17 +583,23 @@ requireLogin(); // Restrict to logged-in users only
 
     <!-- Leaflet Map -->
     <div class="map-container">
-      <div id="indiaMap"></div>
+      <div id="indiaMap" role="application" aria-label="India air quality map"></div>
     </div>
   </div>
+  </section>
 
   <!-- ══ SECTION 2: PIE CHART + SAFETY ALERTS ══ -->
-  <div class="section-title">Pollutant Breakdown & Safety Alerts</div>
+  <section class="section-block" aria-labelledby="sec-analytics-heading">
+    <div class="section-header">
+      <h2 id="sec-analytics-heading">Pollutant mix &amp; <span>health</span> alerts</h2>
+      <p>The doughnut chart reflects either the national average or your selected city. Alerts adapt to the current AQI band.</p>
+      <div class="section-divider"></div>
+    </div>
   <div class="analytics-section">
 
     <!-- Pie Chart -->
     <div class="pie-card">
-      <h3>🧪 Pollutant Contribution — <span id="pieCity">India Average</span></h3>
+      <h3>Pollutant contribution — <span id="pieCity">India average</span></h3>
       <div class="pie-wrap">
         <canvas id="pollutantPie"></canvas>
         <div class="pie-legend" id="pieLegend"></div>
@@ -438,20 +624,25 @@ requireLogin(); // Restrict to logged-in users only
           <span class="alert-status" id="kidsStatus">—</span>
         </div>
       </div>
-      <div class="alert-card" id="generalAlert" style="background:linear-gradient(135deg,#e3f2fd,#f0f8ff);border-left:5px solid var(--accent);">
+      <div class="alert-card alert-general" id="generalAlert">
         <div class="alert-icon">🏃</div>
         <div class="alert-content">
-          <h4 style="color:#0d47a1;">General Public</h4>
-          <p id="generalMsg">Safety advisory for general public will appear here once you select a city.</p>
-          <span class="alert-status" id="generalStatus" style="background:var(--accent);">—</span>
+          <h4>General public</h4>
+          <p id="generalMsg">Safety advisory for the general public will appear here once you select a city.</p>
+          <span class="alert-status status-general" id="generalStatus">—</span>
         </div>
       </div>
     </div>
   </div>
+  </section>
 
   <!-- ══ SECTION 3: CATEGORIES ══ -->
-  <div class="categories-section">
-    <div class="section-title">City Categories by Pollutant</div>
+  <section class="categories-section section-block" aria-labelledby="sec-table-heading">
+    <div class="section-header">
+      <h2 id="sec-table-heading">Cities by <span>pollutant</span> emphasis</h2>
+      <p>Sort and compare cities by overall AQI or by the dominant pollutant for planning and awareness.</p>
+      <div class="section-divider"></div>
+    </div>
     <div class="cat-tabs">
       <button class="cat-tab active" onclick="switchTab('all',this)">🏙️ All Cities</button>
       <button class="cat-tab" onclick="switchTab('pm25',this)">🔬 PM2.5</button>
@@ -461,6 +652,7 @@ requireLogin(); // Restrict to logged-in users only
       <button class="cat-tab" onclick="switchTab('co',this)">🚗 CO</button>
       <button class="cat-tab" onclick="switchTab('ozone',this)">🌐 Ozone</button>
     </div>
+    <div class="table-scroll">
     <div class="city-table-wrap">
       <table>
         <thead>
@@ -477,11 +669,14 @@ requireLogin(); // Restrict to logged-in users only
         <tbody id="cityTableBody"></tbody>
       </table>
     </div>
-  </div>
+    </div>
+  </section>
 
   <!-- ══ SECTION 4: FEEDBACK ══ -->
   <div class="feedback-section">
-    <button class="feedback-btn" onclick="document.getElementById('feedbackModal').classList.add('active')">💬 Share Your Feedback</button>
+    <h3>We value your input</h3>
+    <p>Spot an issue or have an idea? Tell us what works and what we should improve next.</p>
+    <button type="button" class="feedback-btn" onclick="document.getElementById('feedbackModal').classList.add('active')">Share feedback</button>
   </div>
   
   <div class="feedback-modal" id="feedbackModal">
@@ -684,7 +879,7 @@ function buildDefaultPie() {
   // average across all cities
   const avg = key => Math.round(cities.reduce((s,c)=>s+c[key],0)/cities.length);
   const data = [avg('pm25'),avg('pm10'),avg('no2'),avg('so2'),Math.round(avg('co')*10),avg('ozone')];
-  renderPie(data, 'India Average');
+  renderPie(data, 'India average');
 }
 
 function updatePie(city) {
@@ -759,13 +954,16 @@ function updateAlerts(city) {
   const gStat = document.getElementById('generalStatus');
   if(aqi > 200) {
     gMsg.textContent=`Severe AQI of ${aqi}. General public should wear N95 masks outdoors. Avoid jogging or cycling. Limit time near busy roads and construction sites.`;
-    gStat.textContent='🚨 SEVERE — WEAR MASK OUTDOORS'; gStat.style.background='#e53935';
+    gStat.textContent='🚨 Severe — wear mask outdoors';
+    gStat.className = 'alert-status status-severe';
   } else if(aqi > 100) {
     gMsg.textContent=`Moderate AQI of ${aqi}. Healthy adults can go outdoors with precaution. Sensitive individuals should reduce prolonged outdoor exertion.`;
-    gStat.textContent='⚠️ MODERATE — TAKE PRECAUTION'; gStat.style.background='#ffc107'; gStat.style.color='#3d2800';
+    gStat.textContent='⚠️ Moderate — take precaution';
+    gStat.className = 'alert-status status-moderate';
   } else {
     gMsg.textContent=`Air quality is good today with AQI of ${aqi}. Safe for all outdoor activities. Great day for a walk or exercise!`;
-    gStat.textContent='✅ GOOD — ENJOY OUTDOORS'; gStat.style.background='var(--good)'; gStat.style.color='#fff';
+    gStat.textContent='✅ Good — enjoy outdoors';
+    gStat.className = 'alert-status status-good-aqi';
   }
 }
 
