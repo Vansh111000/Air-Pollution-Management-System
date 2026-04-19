@@ -1,3 +1,4 @@
+<!-- catalogue.php -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -848,9 +849,7 @@
 </div><!-- end layout -->
 
 <footer>
-  © 2025 VayuDarpan – National Air Quality Monitoring Portal &nbsp;|&nbsp;
-  <a href="#">CPCB</a> &nbsp;|&nbsp; <a href="#">MoEFCC</a> &nbsp;|&nbsp;
-  <a href="#">WHO Guidelines</a>
+  © 2026 VayuDarpan Developed under guidence Bharathi ma'am by Vansh Kataria, Atharva kamath
 </footer>
 
 <script>

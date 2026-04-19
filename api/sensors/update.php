@@ -1,5 +1,4 @@
 <?php
-// api/sensors/update.php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Methods: POST, PUT');
 header('Access-Control-Allow-Headers: Content-Type');

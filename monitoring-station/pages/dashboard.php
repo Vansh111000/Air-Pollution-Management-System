@@ -57,6 +57,22 @@
     <div id="recent-sensors-container" style="margin-top: 1rem;"></div>
 </div>
 
+<!-- User Feedback Section -->
+<div class="card" style="margin-top: 2rem;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h3 style="margin: 0;">User Feedback</h3>
+        <select id="fbFilter" onchange="loadWorkerFeedback()" style="padding:0.5rem; border-radius:4px; border:1px solid #ccc; font-family:'Noto Sans',sans-serif;">
+            <option value="recent">Most Recent First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="rating_high">Highest Rating</option>
+            <option value="rating_low">Lowest Rating</option>
+        </select>
+    </div>
+    <div id="workerFeedbackContainer" style="max-height:300px; overflow-y:auto; border-top:1px solid #eee; padding-top:1rem;">
+        <div style="color:var(--color-text-secondary); text-align:center;">Loading feedback...</div>
+    </div>
+</div>
+
 <style>
 @media (max-width: 1200px) {
     .analytics-grid {
@@ -72,6 +88,51 @@
     position: relative;
     height: 300px;
 }
+
+/* Feedback Styling */
+.fb-item { padding:1rem; border-bottom:1px solid #eee; }
+.fb-item:last-child { border-bottom:none; }
+.fb-header { display:flex; justify-content:space-between; margin-bottom:0.5rem; }
+.fb-name { font-weight:600; color:var(--color-text); }
+.fb-date { font-size:0.8rem; color:var(--color-text-secondary); }
+.fb-rating { color:#ffc107; margin-bottom:0.5rem; }
+.fb-msg { font-size:0.9rem; color:#444; }
 </style>
 
 <script src="/assets/js/dashboard.js"></script>
+<script>
+function loadWorkerFeedback() {
+    const filter = document.getElementById('fbFilter').value;
+    const container = document.getElementById('workerFeedbackContainer');
+    container.innerHTML = '<div style="color:var(--color-text-secondary); text-align:center;">Loading feedback...</div>';
+
+    fetch(`../api/feedback/list.php?sort=${filter}`)
+        .then(r => r.json())
+        .then(data => {
+            if(data.success) {
+                if(data.data.length === 0) {
+                    container.innerHTML = '<div style="color:var(--color-text-secondary); text-align:center;">No feedback submitted yet.</div>';
+                    return;
+                }
+                container.innerHTML = data.data.map(fb => {
+                    const stars = '⭐'.repeat(fb.rating || 0) + '☆'.repeat(5 - (fb.rating || 0));
+                    return `
+                    <div class="fb-item">
+                        <div class="fb-header">
+                            <span class="fb-name">👤 ${fb.user_name || 'Anonymous User'}</span>
+                            <span class="fb-date">🕒 ${new Date(fb.created_at).toLocaleString()}</span>
+                        </div>
+                        <div class="fb-rating" title="${fb.rating}/5 Rating">${stars}</div>
+                        <div class="fb-msg">${fb.message.replace(/</g, "&lt;")}</div>
+                    </div>`;
+                }).join('');
+            } else {
+                container.innerHTML = `<div style="color:red; text-align:center;">Error: ${data.message}</div>`;
+            }
+        })
+        .catch(err => {
+            container.innerHTML = `<div style="color:red; text-align:center;">Failed to load feedback.</div>`;
+        });
+}
+document.addEventListener('DOMContentLoaded', loadWorkerFeedback);
+</script>

@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost/vayu/api";
+const API_BASE = "../api";
 
 class ApiService {
     constructor() {
@@ -91,7 +91,6 @@ class ApiService {
         const payload = {
             sensor_id: sensorData.id,
             name: sensorData.name,
-            area: sensorData.area, 
             location: sensorData.location,
             type: sensorData.type,
             status: sensorData.status,

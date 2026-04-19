@@ -1,5 +1,4 @@
 <?php
-// api/images/upload.php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Methods: POST');
 require_once dirname(__DIR__) . '/db.php';

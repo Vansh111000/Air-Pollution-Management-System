@@ -1,5 +1,4 @@
 <?php
-// api/sensors/add.php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Content-Type');
@@ -26,26 +25,45 @@ if (!isset($input['sensor_id']) || trim($input['sensor_id']) === '') {
     exit;
 }
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 $sensor_id = trim($input['sensor_id']);
 $name = $input['name'] ?? null;
 $type = $input['type'] ?? null;
 $status = $input['status'] ?? 'monitoring';
 $health = $input['health'] ?? 'good';
+$station_id = $input['station_id'] ?? null;
 $area_id = $input['area_id'] ?? null;
-if (!$area_id && isset($input['area'])) { //if we have not included area id, we will basically find it from area name.
-    $astmt = $pdo->prepare("SELECT area_id FROM areas WHERE area_name = ?");
-    $astmt->execute([$input['area']]);
-    $fetched_area_id = $astmt->fetchColumn();
-    if ($fetched_area_id) {
-        $area_id = $fetched_area_id;
-    } else {
-        $ins = $pdo->prepare("INSERT INTO areas (area_name) VALUES (?)"); //if area is not there, then we will first insert the area 
-        $ins->execute([trim($input['area'])]);
-        $area_id = $pdo->lastInsertId(); //area id will obviously be last inserted id
+$location = $input['location'] ?? null;
+
+// Automatically bind to station worker's environment if assigned
+if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'station_worker' && isset($_SESSION['station_id'])) {
+    $station_id = $_SESSION['station_id'];
+    
+    // Auto-fetch related area_id linked to their station
+    $findAreaStmt = $pdo->prepare("SELECT area_id FROM monitoring_stations WHERE station_id = ?");
+    $findAreaStmt->execute([$station_id]);
+    $linked_area_id = $findAreaStmt->fetchColumn();
+    if ($linked_area_id) {
+        $area_id = $linked_area_id;
+    }
+} else {
+    // Current fallback if not station worker but passed area name
+    if (!$area_id && isset($input['area'])) { 
+        $astmt = $pdo->prepare("SELECT area_id FROM areas WHERE area_name = ?");
+        $astmt->execute([$input['area']]);
+        $fetched_area_id = $astmt->fetchColumn();
+        if ($fetched_area_id) {
+            $area_id = $fetched_area_id;
+        } else {
+            $ins = $pdo->prepare("INSERT INTO areas (area_name) VALUES (?)"); 
+            $ins->execute([trim($input['area'])]);
+            $area_id = $pdo->lastInsertId(); 
+        }
     }
 }
-$station_id = $input['station_id'] ?? null; //its the foreign key and there is one station to many sensor relationship
-$location = $input['location'] ?? null; //its null
 
 try {
     // Validate unique sensor_id

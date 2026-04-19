@@ -3,10 +3,7 @@
 error_reporting(0); //in prod 
 // error_reporting(E_ALL); //in dev
 // ini_set('display_errors', 1); // in dev
-header('Content-Type: application/json'); //will tell the cloud that we will send response in json type 
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: Content-Type");
-// The above two lines will allow requests from all frontends so when prod use your specific url.
+// The CORS blocks should be placed individually in API endpoint files.
 
 $host = '127.0.0.1'; //or localhost will work too 
 $db_name = 'apms_db';

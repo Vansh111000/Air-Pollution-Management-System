@@ -1,5 +1,4 @@
 <?php
-// api/images/get.php
 require_once dirname(__DIR__) . '/db.php';
 
 $image_id = $_GET['image_id'] ?? null;

@@ -5,7 +5,8 @@
  * 
  * Returns:
  * - All sensors if no parameters provided
- * - Single sensor if id parameter provided
+ * - 
+ * Single sensor if id parameter provided
  * - Filtered sensors if filter parameters provided
  */
 

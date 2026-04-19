@@ -1,5 +1,4 @@
 <?php
-// api/sensors/delete.php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Methods: POST, DELETE');
 header('Access-Control-Allow-Headers: Content-Type');

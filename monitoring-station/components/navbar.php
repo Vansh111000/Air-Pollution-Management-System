@@ -3,6 +3,16 @@
  * Navbar Component
  * Top navigation bar with logo, theme toggle, and profile menu
  */
+$uId = $_SESSION['user_id'] ?? 0;
+if (isset($pdo)) {
+    $stmtUser = $pdo->prepare("SELECT name, email, user_type FROM users WHERE user_id = ?");
+    $stmtUser->execute([$uId]);
+    $currentUser = $stmtUser->fetch(PDO::FETCH_ASSOC);
+}
+
+$uName = htmlspecialchars($currentUser['name'] ?? '');
+$uEmail = htmlspecialchars($currentUser['email'] ?? '');
+$uRole = htmlspecialchars(ucwords(str_replace('_', ' ', $currentUser['user_type'] ?? '')));
 ?>
 <nav class="navbar">
     <div class="navbar-container">
@@ -97,20 +107,43 @@ function handleEditProfile(e) {
     showModal('Edit Profile', `
         <div class="form-group">
             <label>Name</label>
-            <input type="text" value="Admin User" class="form-input">
+            <input type="text" id="editProfileName" value="<?php echo $uName; ?>" class="form-input">
         </div>
         <div class="form-group">
             <label>Email</label>
-            <input type="email" value="admin@vayudarpan.com" class="form-input">
+            <input type="email" id="editProfileEmail" value="<?php echo $uEmail; ?>" class="form-input">
         </div>
         <div class="form-group">
             <label>Role</label>
-            <input type="text" value="Administrator" class="form-input" disabled>
+            <input type="text" value="<?php echo $uRole; ?>" class="form-input" disabled>
+        </div>
+        <div class="form-group">
+            <label>New Password (Optional)</label>
+            <input type="password" id="editProfilePass" placeholder="Leave blank to keep current" class="form-input">
         </div>
     `, [
-        { text: 'Save', action: () => {
-            closeModal();
-            showNotification('Profile updated successfully', 'success');
+        { text: 'Save', action: async () => {
+             const newName = document.getElementById('editProfileName').value;
+             const newEmail = document.getElementById('editProfileEmail').value;
+             const newPass = document.getElementById('editProfilePass').value;
+             
+             try {
+                const res = await fetch('../api/users/update_profile.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: newName, email: newEmail, password: newPass })
+                });
+                const data = await res.json();
+                if(data.success) {
+                    closeModal();
+                    showNotification('Profile updated successfully! Refreshing...', 'success');
+                    setTimeout(() => window.location.reload(), 1500);
+                } else {
+                    alert(data.message || 'Error updating profile');
+                }
+             } catch(err) {
+                 alert('Network error');
+             }
         }},
         { text: 'Cancel', action: closeModal }
     ]);
@@ -119,7 +152,7 @@ function handleEditProfile(e) {
 function handleLogout(e) {
     e.preventDefault();
     if (confirm('Are you sure you want to logout?')) {
-        window.location.href = '/logout.php';
+        window.location.href = '../logout.php';
     }
 }
 </script>

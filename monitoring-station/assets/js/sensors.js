@@ -209,10 +209,6 @@ function openAddSensorModal() {
             </div>
         </div>
         <div class="form-group">
-            <label>Area *</label>
-            <input type="text" class="form-input" id="new-sensor-area" placeholder="e.g., Mumbai">
-        </div>
-        <div class="form-group">
             <label>Specific Location *</label>
             <input type="text" class="form-input" id="new-sensor-location" placeholder="e.g., Sector 1, MIDC">
         </div>
@@ -251,7 +247,6 @@ async function addNewSensor() {
         id: document.getElementById('new-sensor-id').value,
         type: document.getElementById('new-sensor-type').value,
         status: document.getElementById('new-sensor-status').value,
-        area: document.getElementById('new-sensor-area').value,
         location: document.getElementById('new-sensor-location').value,
         health: document.getElementById('new-sensor-health').value,
         images: []
@@ -262,7 +257,6 @@ async function addNewSensor() {
         id: { required: true },
         type: { required: true },
         status: { required: true },
-        area: { required: true },
         location: { required: true }
     });
 

@@ -1,3 +1,4 @@
+<!-- index.php (root directory) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -305,7 +306,8 @@
       display: flex;
       align-items: flex-end;
       gap: 8px;
-      height: 80px;
+      height: 120px;
+      margin-top: 10px;
     }
     .bar-group {
       display: flex;
@@ -670,13 +672,13 @@
   <!-- TEMP BLOCK -->
   <div class="temp-block">
     <div class="temp-icon">🌡️</div>
-    <div class="temp-val">34°C</div>
+    <div class="temp-val" id="tempVal">34°C</div>
     <div class="temp-details">
-      <p>Feels like <span>37°C</span> &nbsp;|&nbsp; Humidity: <span>72%</span> &nbsp;|&nbsp; Wind: <span>18 km/h SW</span></p>
-      <p>Visibility: <span>6 km</span> &nbsp;|&nbsp; UV Index: <span>High (8)</span> &nbsp;|&nbsp; Dew Point: <span>26°C</span></p>
+      <p>Feels like <span id="tempFeels">37°C</span> &nbsp;|&nbsp; Humidity: <span id="tempHum">72%</span> &nbsp;|&nbsp; Wind: <span id="tempWind">18 km/h SW</span></p>
+      <p>Visibility: <span id="tempVis">6 km</span> &nbsp;|&nbsp; Pressure: <span id="tempPres">1012 hPa</span></p>
     </div>
-    <div style="font-size:2rem;">☀️</div>
-    <div style="font-family:'Rajdhani',sans-serif;font-size:1rem;color:#1a2a3a;font-weight:600;">Partly Sunny<br><span style="font-size:0.78rem;color:#888;font-weight:400;">No rain expected today</span></div>
+    <div style="font-size:2rem;" id="weatherIcon">☀️</div>
+    <div style="font-family:'Rajdhani',sans-serif;font-size:1rem;color:#1a2a3a;font-weight:600;"><span id="weatherDesc">Partly Sunny</span></div>
   </div>
 
   <!-- FORECAST -->
@@ -751,11 +753,7 @@
 </div><!-- end main-content -->
 
 <footer>
-  © 2025 VayuDarpan – National Air Quality Monitoring Portal &nbsp;|&nbsp;
-  <a href="#">CPCB</a> &nbsp;|&nbsp;
-  <a href="#">Ministry of Environment</a> &nbsp;|&nbsp;
-  <a href="#">Data Policy</a> &nbsp;|&nbsp;
-  Designed for Govt. of India Initiative
+  © 2026 VayuDarpan Developed under guidence Bharathi ma'am by Vansh Kataria, Atharva kamath
 </footer>
 
 <script>
@@ -814,30 +812,70 @@
   });
 
   // ── CITY SEARCH ──
-  function searchCity() {
-    const city = document.getElementById('cityInput').value.trim();
+  const WEATHER_API_KEY = "ad7929500ad79921beaed9fe2c862c53";
+
+  async function searchCity(defaultCity = null) {
+    const city = defaultCity || document.getElementById('cityInput').value.trim();
     if (!city) return alert('Please enter a city name.');
-    // In production this calls your PHP backend
-    alert(`Fetching AQI for "${city}"...\n(Connect to your PHP/CPCB API here)`);
+    
+    try {
+      // 1. Fetch Weather
+      const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${WEATHER_API_KEY}&units=metric`;
+      const weatherRes = await fetch(weatherUrl);
+      if(!weatherRes.ok) throw new Error("City not found or API error");
+      const weatherData = await weatherRes.json();
+      
+      // Update Weather UI
+      document.getElementById('tempVal').textContent = Math.round(weatherData.main.temp) + '°C';
+      document.getElementById('tempFeels').textContent = Math.round(weatherData.main.feels_like) + '°C';
+      document.getElementById('tempHum').textContent = weatherData.main.humidity + '%';
+      document.getElementById('tempWind').textContent = (weatherData.wind.speed * 3.6).toFixed(1) + ' km/h';
+      document.getElementById('tempVis').textContent = (weatherData.visibility / 1000).toFixed(1) + ' km';
+      document.getElementById('tempPres').textContent = weatherData.main.pressure + ' hPa';
+      document.getElementById('weatherDesc').textContent = weatherData.weather[0].description.toUpperCase();
+      
+      const { lat, lon } = weatherData.coord;
+      
+      // 2. Fetch Air Pollution
+      const aqiUrl = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}`;
+      const aqiRes = await fetch(aqiUrl);
+      const aqiData = await aqiRes.json();
+      
+      const pollution = aqiData.list[0];
+      const owmAqi = pollution.main.aqi; 
+      
+      // Calculate realistic Indian AQI using PM2.5 roughly
+      let pm25 = pollution.components.pm2_5; // Fix: was pm25 instead of pm2_5
+      let aqiVal = Math.round(pm25 * 3.5); 
+      if (aqiVal < 20) aqiVal = 25; // Base minimum
+      if (isNaN(aqiVal)) aqiVal = 50; // Fallback
+      
+      let aqiClass = 'good';
+      let aqiBadgeMsg = '✅ Pleasant — Air quality is satisfactory';
+      
+      if(aqiVal <= 100) { aqiClass = 'good'; }
+      else if(aqiVal <= 200) { aqiClass = 'moderate'; aqiBadgeMsg = '⚠️ Moderate — Sensitive groups should limit outdoor exposure'; }
+      else { aqiClass = 'severe'; aqiBadgeMsg = '🚨 Severe — Avoid outdoor activities, wear N95 mask'; }
+
+      // Update AQI UI
+      document.getElementById('aqiCity').textContent = '📍 ' + weatherData.name + ', ' + weatherData.sys.country;
+      document.getElementById('aqiNumber').textContent = aqiVal; 
+      document.getElementById('aqiMain').className = 'aqi-main ' + aqiClass;
+      document.getElementById('aqiBadge').textContent = aqiBadgeMsg;
+      
+    } catch(e) {
+      alert("Error: " + e.message);
+    }
   }
+
   document.getElementById('cityInput').addEventListener('keydown', e => {
     if (e.key === 'Enter') searchCity();
   });
 
-  // ── AQI BG SWITCH (demo cycling) ──
-  const aqiMain = document.getElementById('aqiMain');
-  const aqiBadge = document.getElementById('aqiBadge');
-  const levels = [
-    {cls:'good',     badge:'✅ Pleasant — Air quality is satisfactory for all groups'},
-    {cls:'moderate', badge:'⚠️ Moderate — Sensitive groups should limit outdoor exposure'},
-    {cls:'severe',   badge:'🚨 Severe — Avoid outdoor activities, wear N95 mask'},
-  ];
-  let lvl = 1;
-  setInterval(() => {
-    lvl = (lvl + 1) % levels.length;
-    aqiMain.className = 'aqi-main ' + levels[lvl].cls;
-    aqiBadge.textContent = levels[lvl].badge;
-  }, 6000);
+  // Call on load with default city
+  window.addEventListener('load', () => {
+    searchCity('New Delhi');
+  });
 
   // ── FAQ TOGGLE ──
   function toggleFaq(el) {

@@ -7,7 +7,8 @@
  */
 
 session_start();
-
+require_once '../api/middleware/auth.php';
+requireStationAccess();
 // Determine current page
 $page = $_GET['page'] ?? 'dashboard';
 $allowed_pages = ['dashboard', 'sensors', 'sensor-detail', 'health'];

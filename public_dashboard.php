@@ -1,4 +1,10 @@
+<?php
+session_start();
+require_once 'api/middleware/auth.php';
+requireLogin(); // Restrict to logged-in users only
+?>
 <!DOCTYPE html>
+<html lang="en">
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -301,6 +307,33 @@
     }
     footer a { color:var(--accent); text-decoration:none; }
 
+    /* Feedback form */
+    .feedback-section { margin-top:20px; text-align:center; }
+    .feedback-btn {
+      background: var(--accent); color: #fff; border:none; padding:10px 20px;
+      font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1rem;
+      border-radius:20px; cursor:pointer; letter-spacing:1px;
+      transition:transform 0.2s; box-shadow:0 3px 10px rgba(0,0,0,0.2);
+    }
+    .feedback-btn:hover { transform:translateY(-2px); }
+    .feedback-modal {
+      display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+      background:rgba(0,0,0,0.5); z-index:3000; align-items:center; justify-content:center;
+    }
+    .feedback-modal.active { display:flex; }
+    .feedback-card {
+      background:#fff; width:90%; max-width:400px; border-radius:14px;
+      padding:24px; box-shadow:0 10px 30px rgba(0,0,0,0.2); position:relative;
+      text-align:left;
+    }
+    .feedback-card h3 { font-family:'Teko',sans-serif; font-size:1.5rem; color:var(--nav-bg); margin-bottom:10px; }
+    .feedback-close { position:absolute; top:16px; right:16px; cursor:pointer; font-size:1.2rem; color:#888; }
+    .feedback-card label { display:block; font-size:0.85rem; font-weight:600; color:#555; margin-bottom:6px; margin-top:12px; }
+    .feedback-card textarea { width:100%; padding:10px; border:2px solid var(--border); border-radius:8px; font-family:'Noto Sans',sans-serif; font-size:0.9rem; resize:vertical; min-height:80px; }
+    .feedback-card select { width:100%; padding:10px; border:2px solid var(--border); border-radius:8px; font-family:'Noto Sans',sans-serif; font-size:0.9rem; }
+    .feedback-card button { width:100%; margin-top:16px; background:var(--nav-bg); color:#fff; border:none; padding:12px; border-radius:8px; font-family:'Rajdhani',sans-serif; font-weight:700; cursor:pointer; font-size:1rem; text-transform:uppercase; transition:background 0.2s;}
+    .feedback-card button:hover { background:var(--accent); }
+
     /* Leaflet popup custom */
     .leaflet-popup-content-wrapper {
       border-radius:10px !important;
@@ -325,8 +358,11 @@
     <a href="index.php">Home</a>
     <a href="catalogue.php">Catalogue</a>
     <a href="public_dashboard.php" class="active">Public Dashboard</a>
-    <a href="signup.php">Sign Up</a>
-    <a href="login.php">Login</a>
+    <?php if ($_SESSION['user_type'] === 'admin'): ?>
+      <a href="admin/admin_dashboard.php">Admin Panel</a>
+    <?php elseif ($_SESSION['user_type'] === 'station_worker'): ?>
+      <a href="monitoring-station/index.php">Station Panel</a>
+    <?php endif; ?>
     <a href="logout.php" class="logout">Logout</a>
   </div>
 </nav>
@@ -443,12 +479,40 @@
     </div>
   </div>
 
+  <!-- ══ SECTION 4: FEEDBACK ══ -->
+  <div class="feedback-section">
+    <button class="feedback-btn" onclick="document.getElementById('feedbackModal').classList.add('active')">💬 Share Your Feedback</button>
+  </div>
+  
+  <div class="feedback-modal" id="feedbackModal">
+    <div class="feedback-card">
+      <div class="feedback-close" onclick="document.getElementById('feedbackModal').classList.remove('active')">✖</div>
+      <h3>Help Us Improve!</h3>
+      <p style="font-size:0.8rem; color:#666; margin-bottom:10px;">Please share your experience with the dashboard.</p>
+      
+      <form id="feedbackForm" onsubmit="submitFeedback(event)">
+        <label>Your Rating (Out of 5)</label>
+        <select id="fbRating" required>
+          <option value="5">⭐⭐⭐⭐⭐ Outstanding</option>
+          <option value="4">⭐⭐⭐⭐ Good</option>
+          <option value="3">⭐⭐⭐ Neutral</option>
+          <option value="2">⭐⭐ Poor</option>
+          <option value="1">⭐ Terrible</option>
+        </select>
+
+        <label>Message</label>
+        <textarea id="fbMessage" placeholder="Any suggestions or issues?" required></textarea>
+
+        <button type="submit" id="fbSubmitBtn">Submit Feedback</button>
+      </form>
+      <div id="fbResultMsg" style="margin-top:10px; font-size:0.85rem; font-weight:600; text-align:center;"></div>
+    </div>
+  </div>
+
 </div><!-- end wrapper -->
 
 <footer>
-  © 2025 VayuDarpan – National Air Quality Monitoring Portal &nbsp;|&nbsp;
-  <a href="#">CPCB</a> &nbsp;|&nbsp; <a href="#">MoEFCC</a> &nbsp;|&nbsp;
-  Data refreshed every 15 minutes
+  © 2026 VayuDarpan Developed under guidence Bharathi ma'am by Vansh Kataria, Atharva kamath
 </footer>
 
 <!-- Leaflet JS -->
@@ -748,6 +812,45 @@ function switchTab(filter, el) {
 }
 
 buildTable('all');
+
+// ══════════════════════════════════════
+// FEEDBACK SUBMISSION
+// ══════════════════════════════════════
+async function submitFeedback(e) {
+  e.preventDefault();
+  const btn = document.getElementById('fbSubmitBtn');
+  const resMsg = document.getElementById('fbResultMsg');
+  const message = document.getElementById('fbMessage').value;
+  const rating = document.getElementById('fbRating').value;
+
+  btn.disabled = true;
+  btn.textContent = "Submitting...";
+  resMsg.textContent = "";
+
+  try {
+    const res = await fetch('api/feedback/submit.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, rating })
+    });
+    const data = await res.json();
+    if(res.ok && data.success) {
+      resMsg.style.color = 'green';
+      resMsg.textContent = data.message;
+      document.getElementById('fbMessage').value = '';
+      setTimeout(() => { document.getElementById('feedbackModal').classList.remove('active'); resMsg.textContent=''; }, 2000);
+    } else {
+      resMsg.style.color = 'red';
+      resMsg.textContent = data.message || "Something went wrong.";
+    }
+  } catch(err) {
+    resMsg.style.color = 'red';
+    resMsg.textContent = "Network error. Try again.";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Submit Feedback";
+  }
+}
 </script>
 </body>
 </html>

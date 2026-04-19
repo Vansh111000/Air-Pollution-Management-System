@@ -1,3 +1,4 @@
+<!-- This is signup.php -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -237,27 +238,7 @@
 
   <!-- FORM -->
   <div id="formWrap">
-    <!-- ROLE SELECTOR -->
-    <div class="role-selector">
-      <label class="role-card selected" id="rc-user" onclick="selectRole('user')">
-        <input type="radio" name="role" value="user" checked/>
-        <div class="role-icon">👤</div>
-        <div class="role-title">General User</div>
-        <div class="role-desc">Public citizen access to AQI data & alerts</div>
-      </label>
-      <label class="role-card" id="rc-monitor" onclick="selectRole('monitor')">
-        <input type="radio" name="role" value="monitor"/>
-        <div class="role-icon">📡</div>
-        <div class="role-title">Monitoring Officer</div>
-        <div class="role-desc">Station operator & field data entry</div>
-      </label>
-      <label class="role-card" id="rc-admin" onclick="selectRole('admin')">
-        <input type="radio" name="role" value="admin"/>
-        <div class="role-icon">🛡️</div>
-        <div class="role-title">Administrator</div>
-        <div class="role-desc">Full system access & user management</div>
-      </label>
-    </div>
+    <!-- ROLE SELECTOR REMOVED FOR SECURITY (Admin assigned only) -->
 
     <div class="form-body">
       <div class="alert-banner" id="alertBanner"></div>
@@ -353,108 +334,7 @@
         </div>
       </div>
 
-      <!-- MONITORING OFFICER FIELDS -->
-      <div class="role-fields" id="rf-monitor">
-        <div class="form-section-title">Monitoring Station Details</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Station ID <span class="req">*</span></label>
-            <div class="field-wrap">
-              <input type="text" id="stationId" placeholder="e.g. MH-MUM-001"/>
-              <span class="v-icon" id="vi-stationId"></span>
-            </div>
-            <span class="err-msg" id="e-stationId">⚠ Station ID must be alphanumeric (e.g. MH-MUM-001)</span>
-          </div>
-          <div class="field">
-            <label>Station Name <span class="req">*</span></label>
-            <div class="field-wrap">
-              <input type="text" id="stationName" placeholder="e.g. Bandra West CAAQMS"/>
-              <span class="v-icon" id="vi-stationName"></span>
-            </div>
-            <span class="err-msg" id="e-stationName">⚠ Please enter the station name</span>
-          </div>
-          <div class="field">
-            <label>Employee ID <span class="req">*</span></label>
-            <div class="field-wrap">
-              <input type="text" id="empId" placeholder="Numeric employee ID"/>
-              <span class="v-icon" id="vi-empId"></span>
-            </div>
-            <span class="err-msg" id="e-empId">⚠ Employee ID must be numeric only</span>
-          </div>
-          <div class="field">
-            <label>Joining Date <span class="req">*</span></label>
-            <div class="field-wrap">
-              <input type="date" id="joinDate" max=""/>
-              <span class="v-icon" id="vi-joinDate"></span>
-            </div>
-            <span class="err-msg" id="e-joinDate">⚠ Please enter a valid joining date</span>
-          </div>
-          <div class="field">
-            <label>AQI Threshold Alert (µg/m³)</label>
-            <div class="field-wrap">
-              <input type="text" id="aqiThresh" placeholder="e.g. 200 (numbers only)"/>
-              <span class="v-icon" id="vi-aqiThresh"></span>
-            </div>
-            <span class="err-msg" id="e-aqiThresh">⚠ Must be a number between 50–500</span>
-          </div>
-          <div class="field">
-            <label>State / Zone <span class="req">*</span></label>
-            <div class="field-wrap">
-              <select id="stateZone">
-                <option value="">— Select State —</option>
-                <option>Maharashtra</option><option>Delhi</option><option>Karnataka</option>
-                <option>Tamil Nadu</option><option>Gujarat</option><option>West Bengal</option>
-                <option>Uttar Pradesh</option><option>Rajasthan</option><option>Other</option>
-              </select>
-              <span class="v-icon" id="vi-stateZone"></span>
-            </div>
-            <span class="err-msg" id="e-stateZone">⚠ Please select your state</span>
-          </div>
-        </div>
-      </div>
 
-      <!-- ADMIN FIELDS -->
-      <div class="role-fields" id="rf-admin">
-        <div class="form-section-title">Administrator Credentials</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Admin Code <span class="req">*</span></label>
-            <div class="field-wrap">
-              <input type="text" id="adminCode" placeholder="Secret admin access code"/>
-              <span class="v-icon" id="vi-adminCode"></span>
-            </div>
-            <span class="err-msg" id="e-adminCode">⚠ Invalid admin access code</span>
-          </div>
-          <div class="field">
-            <label>Department <span class="req">*</span></label>
-            <div class="field-wrap">
-              <select id="department">
-                <option value="">— Select Department —</option>
-                <option>CPCB</option><option>MoEFCC</option><option>State PCB</option>
-                <option>Municipal Corporation</option><option>Research & Development</option>
-              </select>
-              <span class="v-icon" id="vi-department"></span>
-            </div>
-            <span class="err-msg" id="e-department">⚠ Please select your department</span>
-          </div>
-          <div class="field">
-            <label>Designation <span class="req">*</span></label>
-            <div class="field-wrap">
-              <input type="text" id="designation" placeholder="e.g. Senior Environment Officer"/>
-              <span class="v-icon" id="vi-designation"></span>
-            </div>
-            <span class="err-msg" id="e-designation">⚠ Please enter your designation</span>
-          </div>
-          <div class="field">
-            <label>Official ID Number <span class="req">*</span></label>
-            <div class="field-wrap">
-              <input type="text" id="officialId" placeholder="Numeric official ID"/>
-              <span class="v-icon" id="vi-officialId"></span>
-            </div>
-            <span class="err-msg" id="e-officialId">⚠ Official ID must be numeric</span>
-          </div>
-        </div>
-      </div>
 
       <!-- TERMS -->
       <div class="form-section-title">Consent</div>
@@ -479,22 +359,10 @@
 </div>
 
 <script>
-// ══ ROLE SELECTION ══
-let currentRole = 'user';
-function selectRole(role) {
-  currentRole = role;
-  ['user','monitor','admin'].forEach(r => {
-    document.getElementById('rc-'+r).classList.toggle('selected', r===role);
-    const rf = document.getElementById('rf-'+r);
-    if(rf) rf.classList.toggle('show', r===role);
-  });
-  checkSubmitReady();
-}
 
-// ══ DATE CONSTRAINTS ══
+
 const today = new Date().toISOString().split('T')[0];
 document.getElementById('dob').max = today;
-document.getElementById('joinDate') && (document.getElementById('joinDate').max = today);
 
 // ══ VALIDATION HELPERS ══
 function setValid(id) {
@@ -577,8 +445,7 @@ const errMsgs = {
 };
 
 // ══ LIVE VALIDATION ══
-const allFields = ['firstName','lastName','dob','gender','mobile','city','email','password','confirmPw',
-  'stationId','stationName','empId','joinDate','aqiThresh','stateZone','adminCode','department','designation','officialId'];
+const allFields = ['firstName','lastName','dob','gender','mobile','city','email','password','confirmPw'];
 
 allFields.forEach(id => {
   const el = document.getElementById(id);
@@ -621,8 +488,6 @@ document.getElementById('terms').addEventListener('change', function() {
 // ══ SUBMIT ENABLE/DISABLE ══
 function getRequiredFields() {
   const base = ['firstName','lastName','dob','gender','mobile','city','email','password','confirmPw'];
-  if(currentRole==='monitor') return [...base,'stationId','stationName','empId','joinDate','stateZone'];
-  if(currentRole==='admin')   return [...base,'adminCode','department','designation','officialId'];
   return base;
 }
 
@@ -662,13 +527,22 @@ function submitForm() {
   document.getElementById('submitBtn').disabled=true;
 
   // Real API call
-  const payload = { role: currentRole };
+  const payload = {};
   fields.forEach(id => payload[id] = val(id));
 
-  fetch('api/auth/Adding_user.php', {
+  // The backend now securely maps: name = firstName + lastName
+  // We send only what the strict api accepts.
+  const securePayload = {
+     name: payload.firstName + " " + payload.lastName,
+     email: payload.email,
+     password: payload.password,
+     confirm_password: payload.confirmPw
+  };
+
+  fetch('api/auth/register.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(securePayload)
   })
   .then(res => res.json())
   .then(data => {
@@ -677,7 +551,7 @@ function submitForm() {
       const ov = document.getElementById('successOverlay');
       ov.classList.add('show');
       document.getElementById('successMsg').textContent =
-        `Welcome! Your ${currentRole==='admin'?'Admin':currentRole==='monitor'?'Monitoring Officer':'General User'} account has been created. Redirecting to login…`;
+        `Welcome! Your account has been created. Redirecting to login…`;
       setTimeout(()=>{ window.location.href='login.php'; }, 3000);
     } else {
       document.getElementById('spinner').style.display='none';

@@ -1,9 +1,19 @@
 <?php
-// api/health/get.php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 
 require_once dirname(__DIR__) . '/db.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$whereClause = "";
+$params = [];
+if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'station_worker' && isset($_SESSION['station_id'])) {
+    $whereClause = "WHERE s.station_id = :station_id";
+    $params[':station_id'] = $_SESSION['station_id'];
+}
 
 try {
     // Get logs and their corresponding areas
@@ -15,10 +25,12 @@ try {
         FROM health_logs hl
         JOIN sensors s ON hl.sensor_id = s.sensor_id
         LEFT JOIN areas a ON s.area_id = a.area_id
+        $whereClause
         ORDER BY hl.log_date DESC, hl.created_at DESC
     ";
     
-    $stmt = $pdo->query($sql);
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
     $logs = $stmt->fetchAll();
 
     // Grouping by area

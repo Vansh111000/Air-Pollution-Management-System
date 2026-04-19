@@ -1,9 +1,19 @@
 <?php
-// api/sensors/get_all.php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 
 require_once dirname(__DIR__) . '/db.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$whereClause = "";
+$params = [];
+if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'station_worker' && isset($_SESSION['station_id'])) {
+    $whereClause = "WHERE s.station_id = :station_id";
+    $params[':station_id'] = $_SESSION['station_id'];
+}
 
 try {
     $query = "
@@ -29,9 +39,11 @@ try {
                 GROUP BY sensor_id
             ) r2 ON r1.sensor_id = r2.sensor_id AND r1.recorded_at = r2.max_recorded_at
         ) r ON s.sensor_id = r.sensor_id
+        $whereClause
     ";
     //the above query will give the latest readings 
-    $stmt = $pdo->query($query);
+    $stmt = $pdo->prepare($query);
+    $stmt->execute($params);
     $sensors = $stmt->fetchAll();
 
     echo json_encode([

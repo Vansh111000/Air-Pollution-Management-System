@@ -1,3 +1,16 @@
+<?php
+session_start();
+if (isset($_COOKIE['remember_token'])) {
+    require_once 'api/db.php';
+    try {
+        $stmt = $pdo->prepare("UPDATE users SET remember_token = NULL WHERE remember_token = :token");
+        $stmt->execute([':token' => $_COOKIE['remember_token']]);
+    } catch (PDOException $e) {}
+    setcookie('remember_token', '', time() - 3600, '/college/Air-Pollution-Management-System-main');
+}
+$_SESSION = [];
+session_destroy();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
